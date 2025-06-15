@@ -7,7 +7,11 @@ import itsm.itsm_backend.user.Token;
 import itsm.itsm_backend.user.TokenRepository;
 import itsm.itsm_backend.user.User;
 import itsm.itsm_backend.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -115,5 +120,66 @@ public class AuthenticationService {
         userRepository.save(user);
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
+    }
+
+    public void modifyPassword(Map<String, String> parameters) throws MessagingException {
+        User user=
+                this.userRepository.findByEmail(
+                        (parameters.get("email"))).orElseThrow(()->new UsernameNotFoundException("User not found"));
+        this.register(user);
+
+    }
+
+    public void register(User user) throws MessagingException {
+        Token token=new Token();
+        token.setUser(user);
+        token.setCreatedAt(LocalDateTime.now());
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(10));
+        Random random=new Random();
+        int randomInteger= random.nextInt(999999);
+        String code=String.format("%06d",randomInteger);
+        token.setToken(code);
+        this.tokenRepository.save(token);
+        this.emailService.sendEmail(user.getEmail(), user.fullName(), EmailTemplateName.ACTIVATE_ACCOUNT,
+                activationUrl,
+                token.getToken()
+                ,"Modifying password");
+    }
+
+    public Token lireEnFonctionDucode(String code){
+        return    this.tokenRepository.findByToken(code).orElseThrow(()->new RuntimeException("Your token not valid"));
+    }
+    @Transactional
+    public void nouveauMotDePasse(Map<String, String> parameters) {
+        User user=this.userRepository.findByEmail(parameters.get("email")).orElseThrow(()->new UsernameNotFoundException("User not found"));
+        final  Token token=lireEnFonctionDucode(parameters.get("code"));
+
+        if (token.getUser().getEmail().equals(user.getEmail())) {
+            String mdpCrypte = this.passwordEncoder.encode(parameters.get("password"));
+            user.setPassword(mdpCrypte);
+            this.userRepository.save(user);
+        }
+    }
+
+    public User getUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+
+            String email = null;
+            if (principal instanceof UserDetails) {
+                email = ((UserDetails) principal).getUsername();
+            } else if (principal instanceof String) {
+                email = principal.toString();
+            }
+
+            if (email != null) {
+                return userRepository.findByEmail(email)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            }
+        }
+
+        return null;
     }
 }

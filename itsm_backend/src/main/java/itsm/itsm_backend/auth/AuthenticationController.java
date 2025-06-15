@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -38,5 +40,19 @@ public class AuthenticationController {
             @RequestParam String token
     ) throws MessagingException {
         service.activateAccount(token);
+    }
+
+    @PostMapping(path = "/modifyPassword")
+    public void modifierMotDePasse(@RequestBody Map<String,String> activation) throws MessagingException {
+        this.service.modifyPassword(activation);
+    }
+
+    @PostMapping(path = "/newPassword")
+    public void nouveauMotDePasse(@RequestBody Map<String,String> activation){
+        this.service.nouveauMotDePasse(activation);
+    }
+    @GetMapping("/getUserInfo")
+    public ResponseEntity<?> getUserInfo(){
+        return ResponseEntity.ok(service.getUserInfo());
     }
 }
