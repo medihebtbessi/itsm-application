@@ -9,6 +9,8 @@ import itsm.itsm_backend.user.User;
 import itsm.itsm_backend.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,6 +31,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -181,5 +184,11 @@ public class AuthenticationService {
         }
 
         return null;
+    }
+    @Scheduled(cron = "0 */1 * * * *")
+    @Transactional
+    public void netterTable(){
+        log.info("Netting Table already");
+        this.tokenRepository.deleteAllByExpiresAtBefore(LocalDateTime.now());
     }
 }

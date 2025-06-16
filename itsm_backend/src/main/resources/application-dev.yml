@@ -4,6 +4,7 @@ spring:
     username: itsm
     password: itsm
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -13,6 +14,7 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
   mail:
     host: localhost
     port: 1025
@@ -28,16 +30,38 @@ spring:
         connectiontimeout: 5000
         timeout: 3000
         writetimeout: 5000
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: Ov23li1shCn5pGbU7yzr
+            client-secret: f2f7b2d2a2b8da79add83f57c585c5fc7e53b2cc
+            scope: read:user
+            redirect-uri: "http://localhost:4200/login/oauth2/code/github"
+            client-name: GitHub
+            authorization-grant-type: authorization_code
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: login
+
 application:
   security:
     jwt:
       secret-key: asdasd5464zkkekfkrjrnrjkejejkjzeJNJD5885DEJJJEJJRFJakkak
       expiration: 8640000
+
   mailing:
     frontend:
       activation_url: http://localhost:4200/activation-account
+
   file:
     upload:
       photos-output-path: ././uploads
+
 server:
   port: 8090
