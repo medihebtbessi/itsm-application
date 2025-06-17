@@ -61,7 +61,11 @@ application:
 
   file:
     upload:
-      photos-output-path: ././uploads
+      media-output-path: ././uploads
+cloudinary:
+  cloud_name: dgvxs4oqz
+  api_key: 259165191987951
+  api_secret: ivYu59WIVFGDmigV8UwQePvCwPY
 
 server:
   port: 8090

@@ -1,7 +1,11 @@
 package itsm.itsm_backend.user;
 
+import itsm.itsm_backend.chat.Chat;
+import itsm.itsm_backend.common.BaseAuditingEntity;
+import itsm.itsm_backend.ticket.Ticket;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,13 +18,19 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "_user")
+@SuperBuilder
+@Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
-public  class User implements UserDetails, Principal {
+@NamedQuery(name = UserConstants.FIND_USER_BY_EMAIL,query = "select u from User  u where u.email= :email")
+@NamedQuery(name = UserConstants.FIND_ALL_USERS_EXCEPT_SELF
+        ,query = "select u from User  u where u.id!= :publicId")
+@NamedQuery(name = UserConstants.FIND_USER_BY_PUBLIC_ID,
+        query = "select u from User  u where u.id = :publicId")
+
+public  class User extends BaseAuditingEntity implements UserDetails, Principal {
     @Id
     @GeneratedValue
     private Integer id;
@@ -34,6 +44,14 @@ public  class User implements UserDetails, Principal {
     private boolean enable;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToMany(mappedBy = "sender")
+    private List<Chat> chatsAsSender;
+    @OneToMany(mappedBy = "recipient")
+    private List<Chat> chatsAsRecipient;
+    @OneToMany(mappedBy = "recipient")
+    private List<Ticket> ticketsAsRecipient;
+    @OneToMany(mappedBy = "sender")
+    private List<Ticket> ticketsAsSender;
 
     @Override
     public String getName() {
@@ -79,5 +97,10 @@ public  class User implements UserDetails, Principal {
 
     public String fullName(){
         return firstname+" "+lastname;
+    }
+
+
+    public boolean isUserOnline() {
+        return true;
     }
 }
