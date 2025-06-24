@@ -19,7 +19,7 @@ public class AttachmentController {
     private final AttachmentService attachmentService;
 
     @PostMapping("/create")
-    public Long create(@RequestParam String ticketId,@RequestParam("file") MultipartFile file) throws IOException {
+    public Long create(@RequestParam("ticketId") String ticketId,@RequestParam("file") MultipartFile file) throws IOException {
         return attachmentService.saveImage(ticketId,file);
     }
 

@@ -44,13 +44,16 @@ public  class User extends BaseAuditingEntity implements UserDetails, Principal 
     private boolean enable;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(mappedBy = "sender")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "\"group\"")
+    private Group group;
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<Chat> chatsAsSender;
-    @OneToMany(mappedBy = "recipient")
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
     private List<Chat> chatsAsRecipient;
-    @OneToMany(mappedBy = "recipient")
+    @OneToMany(mappedBy = "recipient",cascade = CascadeType.ALL)
     private List<Ticket> ticketsAsRecipient;
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender",cascade = CascadeType.ALL)
     private List<Ticket> ticketsAsSender;
 
     @Override

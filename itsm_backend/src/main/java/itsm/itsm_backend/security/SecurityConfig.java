@@ -39,17 +39,19 @@ public class SecurityConfig {
                                         "/swagger-ui/**",
                                         "webjars/**",
                                         "/swagger-ui.html",
-                                        "/oauth2/**",               // <- ajoute ceci
-                                        "/api/oauth2/**"
+                                        "/oauth2/**",
+                                        "/api/oauth2/**",
+                                "/ws/**"
                                         ).permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().authenticated(
+
+                                )
                 )
 
                 .sessionManagement(session->session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("http://localhost:8090/api/oauth2/success", true));
+                ;
 
         return http.build();
     }

@@ -39,7 +39,7 @@ public class Chat extends BaseAuditingEntity {
     private List<Message> messages;
 
     @Transient
-    public String getChatName(final String senderId) {
+    public String getChatName(final Integer senderId) {
         if (recipient.getId().equals(senderId)) {
             return sender.getFirstname() + " " + sender.getLastname();
         }
@@ -47,7 +47,7 @@ public class Chat extends BaseAuditingEntity {
     }
 
     @Transient
-    public long getUnreadMessages(final String senderId) {
+    public long getUnreadMessages(final Integer senderId) {
         return messages.stream()
                 .filter(m -> m.getReceiverId().equals(senderId))
                 .filter(m -> MessageState.SENT == m.getState())
@@ -74,7 +74,7 @@ public class Chat extends BaseAuditingEntity {
     }
 
     @Transient
-    public String getTargetChatName(final String senderId) {
+    public String getTargetChatName(final Integer senderId) {
         if (sender.getId().equals(senderId)) {
             return sender.getFirstname() + " " + sender.getLastname();
         }

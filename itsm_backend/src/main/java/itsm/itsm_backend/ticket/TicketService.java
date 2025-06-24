@@ -1,9 +1,11 @@
 package itsm.itsm_backend.ticket;
 
 import itsm.itsm_backend.common.PageResponse;
+import itsm.itsm_backend.dashboard.UserLoadDTO;
 import itsm.itsm_backend.user.User;
 import itsm.itsm_backend.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -23,12 +28,12 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
 
-    public PageResponse<Ticket> getTicketsAsRecipient(int page, int size) {
+    public PageResponse<TicketResponse> getTicketsAsRecipient(int page, int size) {
        User user = getUserInfo();
-        Pageable pageable= PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Pageable pageable= PageRequest.of(page,size, Sort.by("createdDate").descending());
         Page<Ticket> tickets = ticketRepository.getTicketsAsRecipient(pageable, user.getId());
         return new PageResponse<>(
-            tickets.stream().toList(),
+            tickets.stream().map(this::mapToTicketResponse).toList(),
             tickets.getNumber(),
             tickets.getSize(),
             tickets.getTotalElements(),
@@ -37,12 +42,12 @@ public class TicketService {
             tickets.isLast()
         );
     }
-    public PageResponse<Ticket> getTicketsAsSender(int page, int size) {
+    public PageResponse<TicketResponse> getTicketsAsSender(int page, int size) {
         User user = getUserInfo();
-        Pageable pageable= PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Pageable pageable= PageRequest.of(page,size, Sort.by("createdDate").descending());
         Page<Ticket> tickets = ticketRepository.getTicketsAsSender(pageable, user.getId());
         return new PageResponse<>(
-                tickets.stream().toList(),
+                tickets.stream().map(this::mapToTicketResponse).toList(),
                 tickets.getNumber(),
                 tickets.getSize(),
                 tickets.getTotalElements(),
@@ -52,10 +57,14 @@ public class TicketService {
         );
     }
     public String save(Ticket ticket) {
+        User user = getUserInfo();
+        ticket.setSender(user);
+        //ticket.setRecipient(user);
         return ticketRepository.save(ticket).getId();
     }
-    public Ticket findById(String id) {
-        return ticketRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+    public TicketResponse findById(String id) {
+       Ticket ticket= ticketRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+        return mapToTicketResponse(ticket);
     }
     public void delete(String ticketId) {
         ticketRepository.deleteById(ticketId);
@@ -68,13 +77,16 @@ public class TicketService {
         ticketUpdated.setResolution_notes(ticket.getResolution_notes());
         ticketUpdated.setStatus(ticket.getStatus());
         ticketUpdated.setPriority(ticket.getPriority());
+        ticketUpdated.setType(ticket.getType());
         return ticketRepository.save(ticketUpdated).getId();
     }
-    public PageResponse<Ticket> findAll(int page, int size) {
-        Pageable pageable= PageRequest.of(page,size, Sort.by("createdAt").descending());
+    public PageResponse<TicketResponse> findAll(int page, int size) {
+        Pageable pageable= PageRequest.of(page,size, Sort.by("createdDate").descending());
         Page<Ticket> tickets = ticketRepository.findAll(pageable);
         return new PageResponse<>(
-                tickets.stream().toList(),
+                tickets.stream()
+                        .map(this::mapToTicketResponse)
+                        .toList(),
                 tickets.getNumber(),
                 tickets.getSize(),
                 tickets.getTotalElements(),
@@ -82,6 +94,23 @@ public class TicketService {
                 tickets.isFirst(),
                 tickets.isLast()
         );
+    }
+    @Transactional
+    public String ticketAsResolved(String ticketId,String resolutionNotes) {
+        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+        ticket.setResolution_notes(resolutionNotes);
+        ticket.setResolution_time(LocalDateTime.now());
+        ticket.setStatus(Status.RESOLVED);
+        return ticketRepository.save(ticket).getId();
+    }
+
+    public void assignTicketToUser(Integer userId, String ticketId) {
+        User user= userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Ticket ticket= ticketRepository.findById(ticketId).orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+        ticket.setRecipient(user);
+        ticket.setStatus(Status.IN_PROGRESS);
+        ticketRepository.save(ticket);
+
     }
 
     public User getUserInfo() {
@@ -103,6 +132,35 @@ public class TicketService {
         }
 
         return null;
+    }
+
+    private TicketResponse mapToTicketResponse(Ticket ticket) {
+        return TicketResponse.builder()
+                .id(ticket.getId())
+                .title(ticket.getTitle())
+                .description(ticket.getDescription())
+                .priority(ticket.getPriority().name())
+                .status(ticket.getStatus().name())
+                .category(ticket.getCategory().name())
+                .type(ticket.getType().name())
+                .resolution_notes(ticket.getResolution_notes())
+                .resolutionTime(ticket.getResolution_time())
+                .createdDate(ticket.getCreatedDate())
+                .sender(ticket.getSender() != null ?UserLoadDTO.builder()
+                        .userId(ticket.getSender().getId())
+                        .fullName(ticket.getSender().fullName())
+                        .email(ticket.getSender().getEmail())
+                        .build(): null)
+                .recipient(ticket.getRecipient() != null ?
+                        UserLoadDTO.builder()
+                                .userId(ticket.getRecipient().getId())
+                                .fullName(ticket.getRecipient().fullName())
+                                .email(ticket.getRecipient().getEmail())
+                                .build()
+                        : null
+                )
+                .attachmentUrls(ticket.getAttachments().stream().map(Attachment::getUrl).toList())
+                .build();
     }
 
 

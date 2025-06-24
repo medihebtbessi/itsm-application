@@ -16,8 +16,8 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping
-    public ResponseEntity<StringResponse> createChat(@RequestParam(name = "sender-id") String senderId,
-                                                     @RequestParam(name = "receiver-id") String receiverId){
+    public ResponseEntity<StringResponse> createChat(@RequestParam(name = "sender-id") Integer senderId,
+                                                     @RequestParam(name = "receiver-id") Integer receiverId){
 
         final String chatId= chatService.createChat(senderId,receiverId);
         StringResponse stringResponse=StringResponse.builder()
@@ -27,7 +27,7 @@ public class ChatController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ChatResponse>> getChatsByReceiver(Authentication authentication){
-        return ResponseEntity.ok(chatService.getChatsByReceiverId(authentication));
+    public ResponseEntity<List<ChatResponse>> getChatsByReceiver(){
+        return ResponseEntity.ok(chatService.getChatsByReceiverId());
     }
 }

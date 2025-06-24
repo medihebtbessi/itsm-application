@@ -10,4 +10,6 @@ public interface TokenRepository extends JpaRepository<Token,Integer> {
     Optional<Token> findByToken(String token);
     @Modifying
     void  deleteAllByExpiresAtBefore(LocalDateTime now);
+
+
 }

@@ -9,4 +9,5 @@ public class UserLoadDTO {
         private Integer userId;
         private String fullName;
         private Long ticketCount;
+        private  String email;
 }

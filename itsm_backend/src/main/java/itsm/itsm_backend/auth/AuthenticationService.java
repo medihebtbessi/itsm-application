@@ -53,6 +53,7 @@ public class AuthenticationService {
                         .accountLocked(false)
                         .enable(false)
                         .role(request.getRole())
+                        .group(request.getGroup())
                         .build();
         userRepository.save(user);
         sendValidationEmail(user);
@@ -137,7 +138,7 @@ public class AuthenticationService {
         Token token=new Token();
         token.setUser(user);
         token.setCreatedAt(LocalDateTime.now());
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(10));
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(60));
         Random random=new Random();
         int randomInteger= random.nextInt(999999);
         String code=String.format("%06d",randomInteger);
@@ -191,4 +192,11 @@ public class AuthenticationService {
         log.info("Netting Table already");
         this.tokenRepository.deleteAllByExpiresAtBefore(LocalDateTime.now());
     }
+
+   //@Scheduled(cron = "0 */1 * * * *")
+    /* @Transactional
+    public void netterTableOfUsersDisabled(){
+        log.info("Netting Table already");
+        this.userRepository.deleteAllByCreatedDateBeforeAndEnable(LocalDateTime.now().plusHours(24),false);
+    }*/
 }

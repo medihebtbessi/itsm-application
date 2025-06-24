@@ -1,5 +1,6 @@
 package itsm.itsm_backend.auth;
 
+import itsm.itsm_backend.user.Group;
 import itsm.itsm_backend.user.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -28,4 +29,5 @@ public class RegistrationRequest {
     @Size(min = 8,message = "Password should be 8 characters long minimum")
     private String password;
     private Role role;
+    private Group group;
 }
