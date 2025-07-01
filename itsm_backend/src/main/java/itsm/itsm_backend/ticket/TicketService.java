@@ -2,15 +2,22 @@ package itsm.itsm_backend.ticket;
 
 import itsm.itsm_backend.common.PageResponse;
 import itsm.itsm_backend.dashboard.UserLoadDTO;
+import itsm.itsm_backend.email.EmailService;
+import itsm.itsm_backend.email.EmailTemplateName;
+import itsm.itsm_backend.ollamaSuggestion.OllamaService;
+import itsm.itsm_backend.user.Role;
 import itsm.itsm_backend.user.User;
 import itsm.itsm_backend.user.UserRepository;
+import jakarta.mail.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,15 +25,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TicketService {
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
+    private final CommentRepository commentRepository;
+    private final OllamaService llamaService;
 
     public PageResponse<TicketResponse> getTicketsAsRecipient(int page, int size) {
        User user = getUserInfo();
@@ -46,6 +60,7 @@ public class TicketService {
         User user = getUserInfo();
         Pageable pageable= PageRequest.of(page,size, Sort.by("createdDate").descending());
         Page<Ticket> tickets = ticketRepository.getTicketsAsSender(pageable, user.getId());
+
         return new PageResponse<>(
                 tickets.stream().map(this::mapToTicketResponse).toList(),
                 tickets.getNumber(),
@@ -81,19 +96,39 @@ public class TicketService {
         return ticketRepository.save(ticketUpdated).getId();
     }
     public PageResponse<TicketResponse> findAll(int page, int size) {
+        User user=getUserInfo();
         Pageable pageable= PageRequest.of(page,size, Sort.by("createdDate").descending());
-        Page<Ticket> tickets = ticketRepository.findAll(pageable);
-        return new PageResponse<>(
-                tickets.stream()
-                        .map(this::mapToTicketResponse)
-                        .toList(),
-                tickets.getNumber(),
-                tickets.getSize(),
-                tickets.getTotalElements(),
-                tickets.getTotalPages(),
-                tickets.isFirst(),
-                tickets.isLast()
-        );
+        //;//.stream().filter(ticket -> ticket.getCategory().equals(user.getGroup().name()));
+        if (user.getRole().equals(Role.ENGINEER)||user.getRole().equals(Role.MANAGER)) {
+            Page<Ticket> tickets = ticketRepository.findByCategorie(Category.valueOf(user.getGroup().name()), pageable);
+            return new PageResponse<>(
+                    tickets.stream()
+                            .map(this::mapToTicketResponse)
+                            .toList(),
+                    tickets.getNumber(),
+                    tickets.getSize(),
+                    tickets.getTotalElements(),
+                    tickets.getTotalPages(),
+                    tickets.isFirst(),
+                    tickets.isLast()
+            );
+        }else {
+            Page<Ticket> tickets = ticketRepository.findAll(pageable);
+            return new PageResponse<>(
+                    tickets.stream()
+                            .map(this::mapToTicketResponse)
+                            .toList(),
+                    tickets.getNumber(),
+                    tickets.getSize(),
+                    tickets.getTotalElements(),
+                    tickets.getTotalPages(),
+                    tickets.isFirst(),
+                    tickets.isLast()
+            );
+        }
+
+
+
     }
     @Transactional
     public String ticketAsResolved(String ticketId,String resolutionNotes) {
@@ -160,8 +195,112 @@ public class TicketService {
                         : null
                 )
                 .attachmentUrls(ticket.getAttachments().stream().map(Attachment::getUrl).toList())
+                .comments(ticket.getComments().stream().map(comment -> CommentResponse.builder()
+                        .id(comment.getId())
+                        .content(comment.getContent())
+                        .type(comment.getType().name()!=null ? comment.getType().name() : null)
+                        .creationDate(comment.getCreatedDate())
+                        .user(UserLoadDTO.builder()
+                                .userId(ticket.getSender().getId())
+                                .fullName(ticket.getSender().fullName())
+                                .email(ticket.getSender().getEmail())
+                                .build())
+                        .build()).toList())
                 .build();
     }
+
+    @Scheduled(cron = "0 */1 * * * *")
+    @Transactional
+    public void nettingTableOfTicketsNull(){
+        ticketRepository.nettingTableWhereNull();
+        log.info("Netting null Tickets already");
+    }
+
+    @Scheduled(cron = "0 0 8 * * *")
+    @Transactional
+    public void notifiyingTicketsNotAssignedAfterThreeDaysOfCreation() throws MessagingException {
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+        List<Ticket> tickets = ticketRepository.findAllTicketsNotAssigned(threeDaysAgo);
+        for (Ticket ticket : tickets) {
+            emailService.sendEmailForTicketNotAssigned(ticket.getSender(),ticket.getSender().fullName(),EmailTemplateName.TICKET_NOT_ASSIGNED,ticket,"Ticket Not Assigned After 3 days");
+        }
+
+        log.info("Netting null Tickets already");
+    }
+
+    @Scheduled(cron = "0 0 8 * * *")
+    @Transactional
+    public void makeAllTicketResolvedHas5DaysAsClosed() throws MessagingException {
+       List<Ticket> tickets = ticketRepository.findAllByStatusAsResolved(LocalDateTime.now().minusDays(5));
+       for (Ticket ticket : tickets) {
+           ticket.setStatus(Status.CLOSED);
+           ticketRepository.save(ticket);
+           emailService.sendEmailForTicketNotAssigned(ticket.getSender(),ticket.getSender().fullName(),EmailTemplateName.TICKET_NOT_ASSIGNED,ticket,"Your ticket has been changed Status to Closed after 5 days of resolution");
+       }
+    }
+
+
+
+
+    @Transactional
+    public String addCommentToTicket(String ticketId,Comment comment) {
+        Ticket ticket=ticketRepository.findById(ticketId).orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+        User user=getUserInfo();
+        comment.setUser(user);
+        comment=commentRepository.save(comment);
+        List<Comment> comments=ticket.getComments();
+        comments.add(comment);
+        ticket.setComments(comments);
+        return ticketRepository.save(ticket).getId();
+    }
+
+
+    @Scheduled(fixedRate = 300_000)
+    public void processEmails() throws Exception {
+        Properties props = new Properties();
+        props.put("mail.store.protocol", "imaps");
+
+        Session session = Session.getInstance(props, null);
+        Store store = session.getStore();
+        store.connect("imap.gmail.com", "ihebtbessi37@gmail.com", "*********");
+
+        Folder inbox = store.getFolder("INBOX");
+        inbox.open(Folder.READ_WRITE);
+
+        Message[] messages = inbox.getMessages();
+
+        for (Message message : messages) {
+            if (!message.isSet(Flags.Flag.SEEN)) {
+                String title = message.getSubject();
+                String description = message.getContent().toString();
+
+                Map<String, String> fields = llamaService.analyzeTicket(title, description);
+                User user=userRepository.findByEmail(Arrays.toString(message.getFrom())).orElseThrow(()->new EntityNotFoundException("User not found"));
+
+                Ticket t = new Ticket();
+                t.setTitle(title);
+                t.setDescription(description);
+                t.setPriority(Priority.valueOf(fields.get("priority")));
+                t.setStatus(Status.valueOf(fields.get("status")));
+                t.setCategory(Category.valueOf(fields.get("category")));
+                t.setType(TypeProbleme.valueOf(fields.get("type")));
+                t.setSender(user);
+
+                ticketRepository.save(t);
+
+                message.setFlag(Flags.Flag.SEEN, true);
+            }
+        }
+
+        inbox.close(false);
+        store.close();
+    }
+
+
+
+
+
+
 
 
 }

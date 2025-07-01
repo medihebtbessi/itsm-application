@@ -28,5 +28,6 @@ public class TicketResponse {
     private UserLoadDTO sender;
     private UserLoadDTO recipient;
     private List<String> attachmentUrls;
+    private List<CommentResponse>  comments;
 }
 

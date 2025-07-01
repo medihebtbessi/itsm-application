@@ -1,21 +1,38 @@
 package itsm.itsm_backend.ollamaSuggestion;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.net.http.HttpRequest;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.net.URI;
+
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class OllamaService {
 
-    @Autowired
-    private RestTemplate restTemplate;
+
+    private final RestTemplate restTemplate;
 
     @Value("${ollama.url:http://localhost:11434}")
     private String ollamaUrl;
@@ -42,6 +59,7 @@ public class OllamaService {
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 List<Double> embedding = (List<Double>) response.getBody().get("embedding");
+                //log.info("TTTTTTTT"+embedding.toString());
                 return embedding;
             }
 
@@ -73,6 +91,47 @@ public class OllamaService {
         }
 
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    public Map<String, String> analyzeTicket(String title, String description) throws IOException, JsonProcessingException, InterruptedException {
+        String prompt = """
+                Voici un ticket avec :
+                - titre : %s
+                - description : %s
+
+                Peux-tu analyser ce ticket et me retourner une réponse JSON avec les champs suivants :
+                {
+                  "priority": "LOW|MEDIUM|HIGH|CRITICAL",
+                  "status": "NEW|IN_PROGRESS|ON_HOLD|CLOSED|RESOLVED",
+                  "category": "SOFTWARE|HARDWARE|NETWORK|OTHER",
+                  "type": "BUG|FEATURE"
+                }
+                """.formatted(title, description);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:11434/api/generate"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString("""
+                {
+                  "model": "llama3",
+                  "prompt": "%s",
+                  "stream": false
+                }
+                """.formatted(prompt.replace("\"", "\\\""))))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        String body = response.body();
+        String jsonRaw = new ObjectMapper().readTree(body).get("response").asText();
+
+        int start = jsonRaw.indexOf('{');
+        int end = jsonRaw.lastIndexOf('}') + 1;
+        String cleanJson = jsonRaw.substring(start, end);
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(cleanJson, new TypeReference<>() {});
     }
 }
 

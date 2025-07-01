@@ -20,6 +20,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @Modifying
     void deleteUserByEmail(String email);
 
-    @Modifying
-    void  deleteAllByCreatedDateBeforeAndEnable(LocalDateTime now,boolean lock);
+    /*@Modifying
+    void  deleteAllByCreatedDateBeforeAndEnable(LocalDateTime now,boolean lock);*/
 }

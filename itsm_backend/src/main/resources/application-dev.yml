@@ -5,6 +5,10 @@ spring:
     password: itsm
     driver-class-name: org.postgresql.Driver
 
+  batch:
+    jdbc:
+      initialize-schema: always
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -69,6 +73,9 @@ cloudinary:
 ollama:
   url: http://localhost:11434
   model: llama3.1
-
+servicenow:
+  url: https://dev193381.service-now.com/api/now/table/incident
+  username: aes.creator
+  password: Oyz/49JcS!vA
 server:
   port: 8090
