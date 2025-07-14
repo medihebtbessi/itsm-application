@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+                http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="frequent_incidents_subreport" pageWidth="555" pageHeight="842" columnWidth="555"
+              leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+
+    <!-- Champs -->
+    <field name="incident" class="java.lang.String"/>
+    <field name="frequency" class="java.lang.Long"/>
+
+    <!-- Détail -->
+    <detail>
+        <band height="20">
+            <!-- Ligne alternée -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="20" backcolor="#F5F5F5">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="0.0"/>
+                </graphicElement>
+            </rectangle>
+
+            <!-- Incident -->
+            <textField>
+                <reportElement x="10" y="2" width="400" height="16"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="9" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{incident}]]></textFieldExpression>
+            </textField>
+
+            <!-- Fréquence -->
+            <textField>
+                <reportElement x="420" y="2" width="100" height="16"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="9" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{frequency}]]></textFieldExpression>
+            </textField>
+
+            <!-- Ligne de séparation -->
+            <line>
+                <reportElement x="0" y="19" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#DDDDDD"/>
+                </graphicElement>
+            </line>
+        </band>
+    </detail>
+
+</jasperReport>

@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+                http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="trend_report" pageWidth="595" pageHeight="842" columnWidth="555"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <!-- Paramètres -->
+    <parameter name="reportPeriod" class="java.lang.String"/>
+    <parameter name="totalTickets" class="java.lang.Integer"/>
+    <parameter name="ollamaSummary" class="java.lang.String"/>
+    <parameter name="generationDate" class="java.lang.String"/>
+    <parameter name="categoryChart" class="java.io.ByteArrayInputStream"/>
+    <parameter name="serviceChart" class="java.io.ByteArrayInputStream"/>
+    <parameter name="recurringCauses" class="java.lang.String"/>
+    <parameter name="recommendations" class="java.lang.String"/>
+    <parameter name="topCategories" class="net.sf.jasperreports.engine.JRDataSource"/>
+    <parameter name="topServices" class="net.sf.jasperreports.engine.JRDataSource"/>
+    <parameter name="frequentIncidents" class="net.sf.jasperreports.engine.JRDataSource"/>
+    <parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+
+
+
+    <!-- Variables -->
+    <variable name="pageNumber" class="java.lang.Integer" resetType="Report" calculation="Count">
+        <variableExpression><![CDATA[1]]></variableExpression>
+    </variable>
+
+    <!-- PAGE 1 : Vue d'ensemble -->
+    <title>
+        <band height="700">
+            <!-- Titre de section -->
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="16" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Vue d'ensemble mensuelle]]></text>
+            </staticText>
+
+            <!-- Statistiques générales -->
+            <rectangle>
+                <reportElement x="0" y="40" width="555" height="80" backcolor="#F5F5F5"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="10" y="50" width="150" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="12" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Statistiques générales]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="20" y="75" width="200" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="11" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Nombre total de tickets : " + $P{totalTickets}]]></textFieldExpression>
+            </textField>
+
+            <!-- Graphiques -->
+            <staticText>
+                <reportElement x="0" y="140" width="200" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="12" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Répartition par catégorie]]></text>
+            </staticText>
+
+            <image>
+                <reportElement x="0" y="165" width="270" height="180"/>
+                <imageExpression><![CDATA[$P{categoryChart}]]></imageExpression>
+            </image>
+
+            <staticText>
+                <reportElement x="285" y="140" width="200" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="12" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Services les plus impactés]]></text>
+            </staticText>
+
+            <image>
+                <reportElement x="285" y="165" width="270" height="180"/>
+                <imageExpression><![CDATA[$P{serviceChart}]]></imageExpression>
+            </image>
+
+            <!-- Causes récurrentes -->
+            <staticText>
+                <reportElement x="0" y="360" width="200" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="12" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Causes récurrentes identifiées]]></text>
+            </staticText>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement x="0" y="385" width="555" height="60"/>
+                <textElement>
+                    <font size="10" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{recurringCauses}]]></textFieldExpression>
+            </textField>
+
+
+            <!-- Recommandations -->
+            <staticText>
+                <reportElement x="0" y="460" width="200" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="12" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Recommandations d'amélioration]]></text>
+            </staticText>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement x="0" y="485" width="555" height="80"/>
+                <textElement>
+                    <font size="10" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{recommendations}]]></textFieldExpression>
+            </textField>
+
+            <!-- Saut de page -->
+            <break>
+                <reportElement x="0" y="699" width="555" height="1"/>
+            </break>
+        </band>
+    </title>
+
+    <!-- En-tête de page -->
+    <pageHeader>
+        <band height="60">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="60" backcolor="#E6F3FF"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#4A90E2"/>
+                </graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="10" y="10" width="400" height="25"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="18" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Rapport d'Analyse des Tendances IT]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="10" y="35" width="300" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="12" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Période : " + $P{reportPeriod}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="350" y="35" width="200" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="10" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Généré le : " + $P{generationDate}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+
+    <!-- Pied de page -->
+    <pageFooter>
+        <band height="30">
+            <line>
+                <reportElement x="0" y="5" width="555" height="1"/>
+            </line>
+            <textField>
+                <reportElement x="0" y="10" width="100" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="9" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="450" y="10" width="105" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="9" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Rapport ITSM]]></text>
+            </staticText>
+        </band>
+    </pageFooter>
+
+    <!-- PAGE 2 : Détails et analyse -->
+    <summary>
+        <band height="700">
+            <!-- Titre de la page 2 -->
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="16" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Analyse détaillée des incidents]]></text>
+            </staticText>
+
+            <!-- Tableau des incidents fréquents -->
+            <staticText>
+                <reportElement x="0" y="40" width="300" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="12" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Incidents les plus fréquents]]></text>
+            </staticText>
+
+            <!-- En-têtes du tableau -->
+            <rectangle>
+                <reportElement x="0" y="65" width="555" height="25" backcolor="#E6F3FF"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#4A90E2"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="10" y="70" width="400" height="15"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="10" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Type d'incident]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="420" y="70" width="100" height="15"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="10" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Fréquence]]></text>
+            </staticText>
+
+            <!-- Sous-rapport pour les incidents fréquents -->
+            <subreport>
+                <reportElement x="0" y="95" width="555" height="150"/>
+                <dataSourceExpression><![CDATA[$P{frequentIncidents}]]></dataSourceExpression>
+                <!--<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "frequent_incidents_subreport.jasper"]]></subreportExpression>-->
+            </subreport>
+
+            <!-- Analyse par Ollama -->
+            <staticText>
+                <reportElement x="0" y="260" width="300" height="20"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="12" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Analyse automatique (IA)]]></text>
+            </staticText>
+
+            <rectangle>
+                <reportElement x="0" y="285" width="555" height="200" backcolor="#F9F9F9"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineColor="#DDDDDD"/>
+                </graphicElement>
+            </rectangle>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement x="10" y="295" width="535" height="180"/>
+                <textElement>
+                    <font size="10" fontName="Arial"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{ollamaSummary}]]></textFieldExpression>
+            </textField>
+
+            <!-- Résumé final -->
+            <staticText>
+                <reportElement x="0" y="500" width="555" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Résumé et prochaines étapes]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="0" y="540" width="555" height="60"/>
+                <textElement>
+                    <font size="10" fontName="Arial"/>
+                </textElement>
+                <text><![CDATA[Ce rapport mensuel permet d'identifier les tendances et les problèmes récurrents dans le système IT. Les recommandations ci-dessus doivent être priorisées pour améliorer la qualité du service et réduire le nombre d'incidents futurs.]]></text>
+            </staticText>
+        </band>
+    </summary>
+
+</jasperReport>

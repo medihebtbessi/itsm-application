@@ -1,6 +1,8 @@
 package itsm.itsm_backend.ticket;
 
 import itsm.itsm_backend.file.ImageService;
+import itsm.itsm_backend.ticket.jpa.AttachmentRepository;
+import itsm.itsm_backend.ticket.jpa.TicketRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

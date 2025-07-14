@@ -1,5 +1,8 @@
-package itsm.itsm_backend.message;
+package itsm.itsm_backend.ticket.jpa;
 
+import itsm.itsm_backend.message.Message;
+import itsm.itsm_backend.message.MessageConstants;
+import itsm.itsm_backend.message.MessageState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

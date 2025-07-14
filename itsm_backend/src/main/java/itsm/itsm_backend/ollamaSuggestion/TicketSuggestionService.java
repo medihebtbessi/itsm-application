@@ -1,9 +1,8 @@
 package itsm.itsm_backend.ollamaSuggestion;
 
 import itsm.itsm_backend.ticket.Ticket;
-import itsm.itsm_backend.ticket.TicketRepository;
+import itsm.itsm_backend.ticket.jpa.TicketRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,7 +36,9 @@ public class TicketSuggestionService {
 
         for (Ticket ticket : activeTickets) {
             String ticketText = ticket.getTitle() + ". " + ticket.getDescription();
-            List<Double> ticketEmbedding = ollamaService.getEmbedding(ticketText);
+            //List<Double> ticketEmbedding =ticket.getEmbeddings(); //ollamaService.getEmbedding(ticketText);
+            List<Double> ticketEmbedding =ollamaService.getEmbedding(ticketText);
+
 
             if (!ticketEmbedding.isEmpty()) {
                 double similarity = ollamaService.calculateCosineSimilarity(inputEmbedding, ticketEmbedding);

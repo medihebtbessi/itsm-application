@@ -1,0 +1,20 @@
+{
+  "name": "ticket-postgres-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "itsm",
+    "database.password": "itsm",
+    "database.dbname": "itsm_thales",
+    "database.server.name": "ticketserver",
+    "table.include.list": "public.ticket",
+    "plugin.name": "pgoutput",
+    "slot.name": "ticket_slot",
+    "publication.name": "ticket_publication",
+    "topic.prefix": "ticketserver",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+  }
+}

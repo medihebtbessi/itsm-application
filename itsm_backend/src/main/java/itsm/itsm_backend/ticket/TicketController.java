@@ -5,19 +5,18 @@ import itsm.itsm_backend.common.PageResponse;
 import itsm.itsm_backend.ollamaSuggestion.TicketSuggestion;
 import itsm.itsm_backend.ollamaSuggestion.TicketSuggestionRequest;
 import itsm.itsm_backend.ollamaSuggestion.TicketSuggestionService;
-import itsm.itsm_backend.user.User;
-import itsm.itsm_backend.user.UserRepository;
-import itsm.itsm_backend.user.UserService;
+import itsm.itsm_backend.reportWithOllama.MonthlyTrendReport;
+import itsm.itsm_backend.reportWithOllama.TrendAnalysisService;
+import itsm.itsm_backend.ticket.jpa.MonthlyTrendReportRepository;
+import itsm.itsm_backend.ticket.jpa.TicketRepository;
+import itsm.itsm_backend.ticket.jpa.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,6 +44,7 @@ public class TicketController {
     private final Job job;
     private  final UserRepository userService;
     private final TicketSuggestionService suggestionService;
+    private final TicketRepository ticketRepository;
 
 
     @GetMapping("/getAllTicket")
@@ -152,6 +153,51 @@ public class TicketController {
     @PutMapping("/comment/{id}")
     public ResponseEntity<?> addComment(@PathVariable("id") String ticketId,@RequestBody Comment comment) {
         return ResponseEntity.ok(ticketService.addCommentToTicket(ticketId, comment));
+    }
+
+    @GetMapping("/search")
+    public List<TicketDocument> search(@RequestParam String keyword) {
+        return ticketService.searchByTitle(keyword);
+    }
+
+    private final MonthlyTrendReportRepository reportRepository;
+
+    @GetMapping("/report/latest")
+    public ResponseEntity<MonthlyTrendReport> getLatestReport() {
+        return reportRepository.findAll(Sort.by(Sort.Direction.DESC, "generatedDate"))
+                .stream().findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
+    }
+
+    //@GetMapping("/report/{period}")
+    public ResponseEntity<MonthlyTrendReport> getReportByPeriod(@PathVariable String period) {
+        return reportRepository.findByPeriodLabel(period)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    private final TrendAnalysisService trendAnalysisService;
+
+    @GetMapping("/report/trendReport")
+    public void getReportTrend() throws Exception {
+        trendAnalysisService.generateMonthlyTrendReport();
+    }
+
+
+    @GetMapping("/calendar-sla")
+    public List<CalendarSlaEventDto> getTicketsForCalendar() {
+        List<Ticket> tickets = ticketRepository.findAll();
+        return tickets.stream()
+                .filter(ticket -> ticket.getDueDate() != null)
+                .map(ticket -> new CalendarSlaEventDto(
+                        ticket.getId(),
+                        "Ticket SLA: " + ticket.getTitle(),
+                        ticket.getDueDate().minusHours(1),
+                        ticket.getDueDate(),
+                        ticket.getStatus().toString()
+                ))
+                .collect(Collectors.toList());
     }
 
 

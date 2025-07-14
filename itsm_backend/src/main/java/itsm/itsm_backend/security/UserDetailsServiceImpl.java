@@ -1,6 +1,6 @@
 package itsm.itsm_backend.security;
 
-import itsm.itsm_backend.user.UserRepository;
+import itsm.itsm_backend.ticket.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

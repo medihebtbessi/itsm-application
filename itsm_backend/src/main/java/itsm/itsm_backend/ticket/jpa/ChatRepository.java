@@ -1,5 +1,7 @@
-package itsm.itsm_backend.chat;
+package itsm.itsm_backend.ticket.jpa;
 
+import itsm.itsm_backend.chat.Chat;
+import itsm.itsm_backend.chat.ChatConstants;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

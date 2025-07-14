@@ -1,5 +1,6 @@
 package itsm.itsm_backend.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import itsm.itsm_backend.chat.Chat;
 import itsm.itsm_backend.common.BaseAuditingEntity;
 import itsm.itsm_backend.ticket.Ticket;
@@ -29,7 +30,7 @@ import java.util.List;
         ,query = "select u from User  u where u.id!= :publicId")
 @NamedQuery(name = UserConstants.FIND_USER_BY_PUBLIC_ID,
         query = "select u from User  u where u.id = :publicId")
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public  class User extends BaseAuditingEntity implements UserDetails, Principal {
     @Id
     @GeneratedValue
@@ -55,6 +56,8 @@ public  class User extends BaseAuditingEntity implements UserDetails, Principal 
     private List<Ticket> ticketsAsRecipient;
     @OneToMany(mappedBy = "sender",cascade = CascadeType.ALL)
     private List<Ticket> ticketsAsSender;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private LevelOfUser levelOfUser;
 
     @Override
     public String getName() {

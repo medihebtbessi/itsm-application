@@ -1,11 +1,15 @@
 package itsm.itsm_backend.ticket;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import itsm.itsm_backend.common.BaseAuditingEntity;
 import itsm.itsm_backend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Type;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +20,9 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
+@Document(indexName = "tickets")
+//@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Ticket extends BaseAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,8 +44,10 @@ public class Ticket extends BaseAuditingEntity {
     private TypeProbleme type;
 
     private String resolution_notes;
+    @JsonAlias("resolutionTime")
     private LocalDateTime resolution_time;
-
+    private LocalDateTime dueDate;
+    private List<Double> embeddings;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User sender;
@@ -48,7 +57,8 @@ public class Ticket extends BaseAuditingEntity {
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Attachment> attachments;
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
 

@@ -1,8 +1,9 @@
 package itsm.itsm_backend.message;
 
 import itsm.itsm_backend.chat.Chat;
-import itsm.itsm_backend.chat.ChatRepository;
+import itsm.itsm_backend.ticket.jpa.ChatRepository;
 import itsm.itsm_backend.file.FileService;
+import itsm.itsm_backend.ticket.jpa.MessageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

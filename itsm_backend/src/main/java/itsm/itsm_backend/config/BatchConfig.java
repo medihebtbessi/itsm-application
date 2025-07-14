@@ -1,9 +1,11 @@
 package itsm.itsm_backend.config;
 
 import itsm.itsm_backend.ticket.Ticket;
-import itsm.itsm_backend.ticket.TicketRepository;
+import itsm.itsm_backend.ticket.jpa.TicketRepository;
 import itsm.itsm_backend.user.User;
-import itsm.itsm_backend.user.UserRepository;
+import itsm.itsm_backend.ticket.jpa.UserRepository;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -18,13 +20,14 @@ import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.io.File;
 
 @Configuration
 @RequiredArgsConstructor
@@ -45,6 +48,7 @@ public class BatchConfig {
         itemReader.setLineMapper(lineMapper());
         return itemReader;
     }
+
 
     @Bean
     @StepScope

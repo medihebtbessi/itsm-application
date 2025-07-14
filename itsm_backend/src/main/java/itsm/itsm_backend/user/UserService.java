@@ -1,6 +1,6 @@
 package itsm.itsm_backend.user;
 
-import itsm.itsm_backend.ticket.TicketRepository;
+import itsm.itsm_backend.ticket.jpa.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

@@ -1,6 +1,8 @@
-package itsm.itsm_backend.ticket;
+package itsm.itsm_backend.ticket.jpa;
 
 import itsm.itsm_backend.dashboard.UserLoadDTO;
+import itsm.itsm_backend.ticket.Category;
+import itsm.itsm_backend.ticket.Ticket;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,5 +52,5 @@ public interface TicketRepository extends JpaRepository<Ticket, String>, JpaSpec
     List<Ticket> findAllByStatusAsResolved(LocalDateTime now);
 
 
-
+    List<Ticket> findByCreatedDateBetween(LocalDateTime localDateTime, LocalDateTime localDateTime1);
 }

@@ -4,10 +4,43 @@ spring:
     username: itsm
     password: itsm
     driver-class-name: org.postgresql.Driver
-
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+    cache:
+      type: redis
+      redis:
+        time-to-live: 600000 # 10 minutes
+        cache-null-values: false
+        use-key-prefix: true
+        key-prefix: "itsm:"
   batch:
     jdbc:
       initialize-schema: always
+  elasticsearch:
+    uris: http://localhost:9200
+    connection-timeout: 10s
+    socket-timeout: 60s
+
+
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: ticket-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
   jpa:
     hibernate:
@@ -66,16 +99,20 @@ application:
   file:
     upload:
       media-output-path: ./uploads
+
 cloudinary:
   cloud_name: dgvxs4oqz
   api_key: 259165191987951
   api_secret: ivYu59WIVFGDmigV8UwQePvCwPY
+
 ollama:
   url: http://localhost:11434
   model: llama3.1
+
 servicenow:
   url: https://dev193381.service-now.com/api/now/table/incident
   username: aes.creator
   password: Oyz/49JcS!vA
+
 server:
   port: 8090

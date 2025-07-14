@@ -1,5 +1,7 @@
 package itsm.itsm_backend.ticket;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import itsm.itsm_backend.common.BaseAuditingEntity;
 import itsm.itsm_backend.user.User;
 import jakarta.persistence.*;
@@ -19,6 +21,9 @@ public class Comment extends BaseAuditingEntity {
     private String content;
     @Enumerated(EnumType.STRING)
     private TypeOfContent type;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Ticket ticket;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 }

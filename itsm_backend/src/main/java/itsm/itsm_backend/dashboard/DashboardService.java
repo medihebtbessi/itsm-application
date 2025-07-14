@@ -1,6 +1,7 @@
 package itsm.itsm_backend.dashboard;
 
 import itsm.itsm_backend.ticket.*;
+import itsm.itsm_backend.ticket.jpa.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

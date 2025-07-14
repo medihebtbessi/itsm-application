@@ -1,5 +1,6 @@
-package itsm.itsm_backend.user;
+package itsm.itsm_backend.ticket.jpa;
 
+import itsm.itsm_backend.user.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 

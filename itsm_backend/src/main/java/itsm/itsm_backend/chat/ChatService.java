@@ -1,12 +1,12 @@
 package itsm.itsm_backend.chat;
 
+import itsm.itsm_backend.ticket.jpa.ChatRepository;
 import itsm.itsm_backend.user.User;
-import itsm.itsm_backend.user.UserRepository;
+import itsm.itsm_backend.ticket.jpa.UserRepository;
 import itsm.itsm_backend.user.UserResponse;
 import itsm.itsm_backend.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
