@@ -134,9 +134,9 @@ jobs:
       - name: Set ENV variable and deploy
         run: |
           ssh ${{secrets.VPS_USERNAME }}@${{secrets.VPS_IP }} <<EOF
-          expoort EMAIL_HOSTNAME=${{secrets.EMAIL_HOSTNAME }}
-          expoort EMAIL_USER_NAME=${{secrets.EMAIL_USER_NAME }}
-          expoort EMAIL_PASSWORD=${{secrets.EMAIL_PASSWORD }}
+          export EMAIL_HOSTNAME=${{secrets.EMAIL_HOSTNAME }}
+          export EMAIL_USER_NAME=${{secrets.EMAIL_USER_NAME }}
+          export EMAIL_PASSWORD=${{secrets.EMAIL_PASSWORD }}
           cd ci-cd
           docker-compose -f docker-compose.yml pull -q
           docker-compose -f docker-compose.yml up -d 
