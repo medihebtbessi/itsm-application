@@ -11,6 +11,22 @@ on:
       - docker/backend/Dockerfile
 
 jobs:
+  check-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: List root files
+        run: ls -la
+      - name: Check itsm_backend directory
+        run: |
+          if [ -d "itsm_backend" ]; then
+            echo "itsm_backend exists"
+          else
+            echo "itsm_backend NOT found"
+            exit 1
+          fi
   compile:
     runs-on: ubuntu-latest
     name: Compile project
