@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - itsm-ui
     paths:
       - itsm_backend/**
       - .github/workflows/*-backend.yml
