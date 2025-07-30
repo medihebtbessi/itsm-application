@@ -18,6 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -52,7 +53,8 @@ public class TicketService {
     private final EmailService emailService;
     private final CommentRepository commentRepository;
     private final OllamaService llamaService;
-    private final TicketElasticRepository ticketElasticRepository;
+
+    //private final TicketElasticRepository ticketElasticRepository;
 
     @Cacheable(value = "ticket-pages", key = "'recipient_' + #page + '_' + #size + '_' + T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public PageResponse<TicketResponse> getTicketsAsRecipient(int page, int size) {
@@ -97,17 +99,17 @@ public class TicketService {
         LocalDateTime dueDate;
 
         switch (ticket.getPriority()) {
-            case CRITICAL -> dueDate = ticket.getCreatedDate().plusHours(2);
-            case HIGH     -> dueDate = ticket.getCreatedDate().plusHours(8);
-            case MEDIUM   -> dueDate = ticket.getCreatedDate().plusHours(24);
-            case LOW     -> dueDate = ticket.getCreatedDate().plusDays(2);
-            default         -> dueDate = ticket.getCreatedDate().plusDays(3); // fallback
+            case CRITICAL -> dueDate = LocalDateTime.now().plusHours(2);
+            case HIGH     -> dueDate = LocalDateTime.now().plusHours(8);
+            case MEDIUM   -> dueDate = LocalDateTime.now().plusHours(24);
+            case LOW     -> dueDate = LocalDateTime.now().plusDays(2);
+            default         -> dueDate = LocalDateTime.now().plusDays(3); // fallback
         }
 
         ticket.setDueDate(dueDate);
         // ticket.setEmbeddings(llamaService.getEmbedding(ticket.getTitle()+". "+ticket.getDescription()));
         ticket = ticketRepository.save(ticket);
-        TicketDocument document = TicketDocument.builder()
+       /* TicketDocument document = TicketDocument.builder()
                 .id(ticket.getId())
                 .title(ticket.getTitle())
                 .description(ticket.getDescription())
@@ -117,11 +119,11 @@ public class TicketService {
                 .status(ticket.getStatus().name())
                 .category(ticket.getCategory().name())
                 .type(ticket.getType().name())
-                .createdDate(ticket.getCreatedDate())
+                .createdDate(LocalDateTime.now())
                 .dueDate(dueDate)
                 .build();
 
-        ticketElasticRepository.save(document);
+        ticketElasticRepository.save(document);*/
 
         //ticketElasticRepository.save(ticket);
         return ticket.getId();
@@ -139,7 +141,7 @@ public class TicketService {
             @CacheEvict(value = "ticket-search", allEntries = true)
     })
     public void delete(String ticketId) {
-        ticketElasticRepository.deleteById(ticketId);
+       // ticketElasticRepository.deleteById(ticketId);
         ticketRepository.deleteById(ticketId);
     }
 
@@ -158,12 +160,12 @@ public class TicketService {
         ticketUpdated.setPriority(ticket.getPriority());
         ticketUpdated.setType(ticket.getType());
 
-        TicketDocument document = TicketDocument.builder()
-                .id(ticket.getId())
+       /* TicketDocument document = TicketDocument.builder()
+                .id(idTicket)
                 .title(ticket.getTitle())
                 .description(ticket.getDescription())
-                .senderId(ticket.getSender().getId())
-                .recipientId(ticket.getRecipient() != null ? ticket.getRecipient().getId() : null)
+                .senderId(ticketUpdated.getSender().getId())
+                //.recipientId(ticketUpdated.getRecipient() != null ? ticket.getRecipient().getId() : null)
                 .priority(ticket.getPriority().name())
                 .status(ticket.getStatus().name())
                 .category(ticket.getCategory().name())
@@ -171,7 +173,7 @@ public class TicketService {
                 .createdDate(ticket.getCreatedDate())
                 .build();
 
-        ticketElasticRepository.save(document);
+        ticketElasticRepository.save(document);*/
         return ticketRepository.save(ticketUpdated).getId();
     }
 
@@ -390,11 +392,11 @@ public class TicketService {
                     LocalDateTime dueDate;
 
                     switch (t.getPriority()) {
-                        case CRITICAL -> dueDate = t.getCreatedDate().plusHours(2);
-                        case HIGH     -> dueDate = t.getCreatedDate().plusHours(8);
-                        case MEDIUM   -> dueDate = t.getCreatedDate().plusHours(24);
-                        case LOW     -> dueDate = t.getCreatedDate().plusDays(2);
-                        default         -> dueDate = t.getCreatedDate().plusDays(3); // fallback
+                        case CRITICAL -> dueDate = LocalDateTime.now().plusHours(2);
+                        case HIGH     -> dueDate = LocalDateTime.now().plusHours(8);
+                        case MEDIUM   -> dueDate = LocalDateTime.now().plusHours(24);
+                        case LOW     -> dueDate = LocalDateTime.now().plusDays(2);
+                        default         -> dueDate = LocalDateTime.now().plusDays(3); // fallback
                     }
 
                     t.setDueDate(dueDate);
@@ -442,10 +444,10 @@ public class TicketService {
 
 
 
-    @Cacheable(value = "ticket-search", key = "#keyword")
+   /* @Cacheable(value = "ticket-search", key = "#keyword")
     public List<TicketDocument> searchByTitle(String keyword) {
         return ticketElasticRepository.findByTitleContaining(keyword);
-    }
+    }*/
 
     private final TrendAnalysisService trendAnalysisService;
 

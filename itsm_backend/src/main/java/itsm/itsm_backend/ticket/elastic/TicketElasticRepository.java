@@ -7,6 +7,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 
 import java.util.List;
 //@ConditionalOnProperty(name = "elastic.enabled", havingValue = "true")
-public interface TicketElasticRepository extends ElasticsearchRepository<TicketDocument, String> {
-    List<TicketDocument> findByTitleContaining(String keyword);
+public interface TicketElasticRepository{/* extends ElasticsearchRepository<TicketDocument, String>
+    List<TicketDocument> findByTitleContaining(String keyword);*/
 }

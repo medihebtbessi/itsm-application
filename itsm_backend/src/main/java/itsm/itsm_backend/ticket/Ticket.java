@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-@Document(indexName = "tickets")
+//@Document(indexName = "tickets")
 //@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Ticket extends BaseAuditingEntity {

@@ -8,7 +8,7 @@ EXISTS=$(curl -s http://connect:8083/connectors | grep ticket-postgres-connector
 
 if [ -z "$EXISTS" ]; then
   echo "🚀 Création du connecteur Debezium PostgreSQL..."
-  curl -X POST -H "Content-Type: application/json" --data @/kafka/init/postgres-connector.json http://connect:8083/connectors
+  curl -X POST -H "Content-Type: application/json" --data @/postgres-connector.json http://connect:8083/connectors
 else
   echo "✅ Le connecteur existe déjà. Pas de création nécessaire."
 fi

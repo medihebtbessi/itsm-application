@@ -1,4 +1,7 @@
 spring:
+  docker:
+    compose:
+      enabled: false
   datasource:
     url: jdbc:postgresql://localhost:5432/itsm_thales
     username: itsm
@@ -24,10 +27,13 @@ spring:
   batch:
     jdbc:
       initialize-schema: always
-  elasticsearch:
-    uris: http://localhost:9200
-    connection-timeout: 10s
-    socket-timeout: 60s
+  #elasticsearch:
+   # client:
+    #    reactive:
+     #     enabled: false
+    #uris: http://localhost:9200
+    #connection-timeout: 10s
+    #socket-timeout: 60s
 
 
 
@@ -53,20 +59,23 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   mail:
-    host: localhost
-    port: 1025
-    username: itsm
-    password: itsm
+    host: ${EMAIL_HOSTNAME}
+    port: 465
+    username: ${EMAIL_USER_NAME}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
-          trust: "*"
         auth: true
+        ssl:
+          enable: true
+          trust: "*"
         starttls:
           enabled: true
-        connectiontimeout: 5000
-        timeout: 3000
-        writetimeout: 5000
+        #connectiontimeout: 5000
+        #timeout: 3000
+        #writetimeout: 5000
+    protocol: smtp
 
   security:
     oauth2:
@@ -95,6 +104,9 @@ application:
   mailing:
     frontend:
       activation_url: http://localhost:4200/activation-account
+  cors:
+    origins: http://localhost:4200,http://localhost:8080,http://192.168.0.227:8090,http://192.168.0.227:8080
+
 
   file:
     upload:

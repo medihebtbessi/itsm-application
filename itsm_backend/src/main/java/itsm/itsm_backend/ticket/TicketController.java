@@ -155,10 +155,10 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.addCommentToTicket(ticketId, comment));
     }
 
-    @GetMapping("/search")
+   /* @GetMapping("/search")
     public List<TicketDocument> search(@RequestParam String keyword) {
         return ticketService.searchByTitle(keyword);
-    }
+    }*/
 
     private final MonthlyTrendReportRepository reportRepository;
 
@@ -195,7 +195,10 @@ public class TicketController {
                         "Ticket SLA: " + ticket.getTitle(),
                         ticket.getDueDate().minusHours(1),
                         ticket.getDueDate(),
-                        ticket.getStatus().toString()
+                        ticket.getDescription(),
+                        ticket.getSender().fullName(),
+                        ticket.getStatus().toString(),
+                        ticket.getCreatedDate()
                 ))
                 .collect(Collectors.toList());
     }

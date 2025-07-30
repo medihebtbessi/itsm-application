@@ -24,7 +24,7 @@ public class NotificationService {
 
             JsonNode root = mapper.readTree(messageJson);
 
-            JsonNode afterNode = root.path("payload").path("after");
+            JsonNode afterNode = root.path("after");
 
             if (afterNode.isMissingNode() || afterNode.isNull()) {
                 return;

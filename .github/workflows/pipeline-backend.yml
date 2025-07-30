@@ -1,0 +1,133 @@
+name: ITSM Backend API Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - itsm_backend/**
+      - .github/workflows/*-backend.yml
+      - 'docker-compose.yml'
+      - docker/backend/Dockerfile
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    name: Compile project
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDk
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'corretto'
+
+      - name: Compile project
+        run: |
+          cd itsm_backend
+          ./mvnw clean compile
+  unit-tests:
+    runs-on: ubuntu-latest
+    name:  Unit tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDk
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'corretto'
+
+      - name: Running unit tests
+        run: |
+          cd itsm_backend
+          ./mvnw  clean test
+  build:
+    runs-on: ubuntu-latest
+    name: Build project
+    needs: [compile, unit-tests]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDk
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'corretto'
+
+      - name: Build project
+        run: |
+          cd itsm_backend
+          ./mvnw clean package 
+  build-image:
+    runs-on: ubuntu-latest
+    name: Build Docker image
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup JDk
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'corretto'
+      - name: Build project
+        run: |
+          cd itsm_backend
+          ./mvnw clean package 
+
+      - name: Extract project version
+        id: extract_version
+        run: |
+          cd itsm_backend
+          echo "version=$(./mvnw -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_ENV
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Build & Push to DockerHub
+        uses: docker/build-push-action@v5
+        with:
+          context: itsm_backend
+          file: docker/backend/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ${{secrets.DOCKERHUB_USERNAME}}/itsm-api:${{ steps.extract_version.outputs.VERSION }},${{secrets.DOCKERHUB_USERNAME}}/itsm-api:latest
+          build-args: |
+            PROFILE=dev
+            APP_VERSION=${{ steps.extract_version.outputs.VERSION }}
+            JAR_FILE=target/itsm-backend-${{ env.version }}.jar
+  deploy:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    needs: [build-image]
+    steps:
+      - name: Create deployment file
+        run: ssh ${{secrets.VPS_USERNAME }}@${{secrets.VPS_IP }} "mkdir -p ci-cd"
+      - name: Copy Docker Compose file
+        run: scp docker-compose.yml ${{secrets.VPS_USERNAME }}@${{secrets.VPS_IP }}:ci-cd/docker-compose.yml
+      - name: Set ENV variable and deploy
+        run: |
+          ssh ${{secrets.VPS_USERNAME }}@${{secrets.VPS_IP }} <<EOF
+          expoort EMAIL_HOSTNAME=${{secrets.EMAIL_HOSTNAME }}
+          expoort EMAIL_USER_NAME=${{secrets.EMAIL_USER_NAME }}
+          expoort EMAIL_PASSWORD=${{secrets.EMAIL_PASSWORD }}
+          cd ci-cd
+          docker-compose -f docker-compose.yml pull -q
+          docker-compose -f docker-compose.yml up -d 
+          EOF
+        

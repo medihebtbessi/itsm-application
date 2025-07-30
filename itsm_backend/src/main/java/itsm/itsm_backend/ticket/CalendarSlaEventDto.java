@@ -15,7 +15,10 @@ public class CalendarSlaEventDto {
     private String title;
     private LocalDateTime start;
     private LocalDateTime end;
+    private String description;
+    private String assignedTo;
     private String status;
+    private LocalDateTime createdAt;
 
     // Constructeurs, getters, setters
 }

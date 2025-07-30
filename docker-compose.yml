@@ -1,21 +1,50 @@
 version: '3.8'
 
 services:
+  ollama-init:
+    image: curlimages/curl
+    depends_on:
+      - ollama
+    entrypoint: >
+      sh -c "
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"llama3\"}' &&
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"llama3:8b\"}'
+      "
+    networks:
+      - spring-demo
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - spring-demo
+    restart: unless-stopped
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
     environment:
-      discovery.type: single-node
-      xpack.security.enabled: false
-      xpack.security.enrollment.enabled: false
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9200:9200"
+    restart: unless-stopped
     networks:
       - spring-demo
+
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.11.1
     ports:
       - "5601:5601"
+    networks:
+      - spring-demo
+
   redis:
     image: redis:7.4.2
     container_name: redis-cache
@@ -23,6 +52,7 @@ services:
       - "6379:6379"
     networks:
       - spring-demo
+
   debezium-init:
     image: curlimages/curl:latest
     container_name: debezium-init
@@ -30,7 +60,7 @@ services:
       - connect
     volumes:
       - ./kafka/init:/kafka/init
-    entrypoint: [ "/bin/sh", "-c", "/kafka/init/init-debezium.sh" ]
+    entrypoint: [ "/bin/sh", "-c", "/init-debezium.sh" ]
     networks:
       - spring-demo
 
@@ -44,7 +74,7 @@ services:
       PGDATA: /var/lib/postgresql/data
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./init-user-db.sql:/docker-entrypoint-init db.d
+      - ./init-user-db.sql:/docker-entrypoint-initdb.d/init-user-db.sql
     ports:
       - "5432:5432"
     networks:
@@ -62,6 +92,32 @@ services:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - spring-demo
+  itsm-api:
+    container_name: itsm-api
+    image: itsm/itsm:1.0.0
+    ports:
+      - "8090:8090"
+    networks:
+      - spring-demo
+    depends_on:
+      - postgres
+      - ollama
+      - redis
+      - kafka
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-sql-itsm:5432/itsm_thales
+      - SPRING_REDIS_HOST=redis
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  itsm-ui:
+    container_name: itsm-ui
+    image: itsm/itsm-ui:1.0.0
+    depends_on:
+      - itsm-api
+    ports:
+      - "8080:80" 
     networks:
       - spring-demo
 
@@ -117,10 +173,37 @@ services:
     networks:
       - spring-demo
 
+  sonarqube:
+    image: sonarqube:10.4-community
+    container_name: sonarqube
+    depends_on:
+      - postgres
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://localhost:5432/itsm_thales
+      SONAR_JDBC_USERNAME: itsm
+      SONAR_JDBC_PASSWORD: itsm
+    ports:
+      - "9000:9000"
+    networks:
+      - spring-demo
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    restart: unless-stopped
+
 networks:
   spring-demo:
     driver: bridge
 
 volumes:
   postgres:
+    driver: local
+  sonarqube_data:
+    driver: local
+  sonarqube_extensions:
+    driver: local
+  sonarqube_logs:
+    driver: local
+  ollama_data:
     driver: local

@@ -3,6 +3,7 @@ package itsm.itsm_backend;
 import itsm.itsm_backend.ticket.jpa.UserRepository;
 import itsm.itsm_backend.user.Role;
 import itsm.itsm_backend.user.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,12 +23,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableScheduling
 @EnableCaching
 @EnableJpaRepositories(basePackages = "itsm.itsm_backend.ticket.jpa")
-@EnableElasticsearchRepositories(basePackages = "itsm.itsm_backend.ticket.elastic")
+//@EnableElasticsearchRepositories(basePackages = "itsm.itsm_backend.ticket.elastic")
+@RequiredArgsConstructor
 public  class ItsmBackendApplication implements CommandLineRunner {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
     public static void main(String[] args) {
         SpringApplication.run(ItsmBackendApplication.class, args);
     }
@@ -37,12 +39,14 @@ public  class ItsmBackendApplication implements CommandLineRunner {
         if (userRepository.count() == 0) {
             User admin = new User();
             admin.setFirstname("admin");
+            admin.setLastname("admin");
             admin.setEmail("admin@example.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setEnable(true);
             admin.setRole(Role.ADMIN);
             userRepository.save(admin);
 
-            System.out.println("✅ Admin user created successfully.");
+
         }
     }
 }

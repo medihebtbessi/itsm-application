@@ -22,9 +22,7 @@ public class ReportController {
     private final TrendAnalysisService trendAnalysisService;
 
     private final TicketRepository ticketRepository;
-    /**
-     * Génère le rapport mensuel automatique
-     */
+
     @PostMapping("/monthly")
     public ResponseEntity<Map<String, Object>> generateMonthlyReport() {
         Map<String, Object> response = new HashMap<>();
@@ -42,9 +40,7 @@ public class ReportController {
         }
     }
 
-    /**
-     * Génère un rapport pour une période personnalisée
-     */
+
     @PostMapping("/custom")
     public ResponseEntity<Map<String, Object>> generateCustomReport(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  LocalDate startDate,
@@ -72,9 +68,7 @@ public class ReportController {
         }
     }
 
-    /**
-     * Obtient une analyse rapide sans génération de PDF
-     */
+
     @GetMapping("/quick-analysis")
     public ResponseEntity<Map<String, Object>> getQuickAnalysis(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  LocalDateTime startDate,
