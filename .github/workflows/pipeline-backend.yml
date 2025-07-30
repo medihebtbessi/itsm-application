@@ -90,6 +90,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
+      - name: Give execute permission to mvnw
+        run: chmod +x ./mvnw
+        working-directory: itsm_backend
 
       - name: Extract project version
         id: extract_version
