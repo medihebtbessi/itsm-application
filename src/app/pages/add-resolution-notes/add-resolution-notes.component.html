@@ -1,0 +1,35 @@
+<div *ngIf="isVisible" class="dialog-overlay">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <h3>Add Resolution Notes</h3>
+    </div>
+    
+    <div class="dialog-content">
+      <label for="resolutionNotes">Resolution Notes:</label>
+      <textarea 
+        id="resolutionNotes"
+        [(ngModel)]="resolutionNotes" 
+        placeholder="Enter resolution notes..."
+        rows="4"
+        class="notes-textarea">
+      </textarea>
+      
+      <div class="checkbox-container">
+        <input 
+          type="checkbox" 
+          id="dontShowAgain" 
+          [(ngModel)]="dontShowAgain">
+        <label for="dontShowAgain">Do not show this dialog anymore</label>
+      </div>
+    </div>
+    
+    <div class="dialog-actions">
+      <button type="button" (click)="onCancel()" class="btn-cancel">
+        Cancel
+      </button>
+      <button type="button" (click)="onConfirm()" class="btn-confirm">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>

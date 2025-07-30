@@ -1,0 +1,156 @@
+
+
+<!-- user-admin.component.html -->
+<div class="container-fluid p-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0 fw-bold">User & Admin</h2>
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn btn-primary d-flex align-items-center gap-2" (click)="addNewUser()">
+        <i class="bi bi-plus-circle"></i>
+        Add new
+      </button>
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          {{selectedPeriod}}
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#" (click)="setPeriod('This Month')">This Month</a></li>
+          <li><a class="dropdown-item" href="#" (click)="setPeriod('Last Month')">Last Month</a></li>
+          <li><a class="dropdown-item" href="#" (click)="setPeriod('This Year')">This Year</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4" id="userTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" 
+              [class.active]="activeTab === 'user'"
+              (click)="setActiveTab('user')"
+              type="button">
+        User
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" 
+              [class.active]="activeTab === 'admin'"
+              (click)="setActiveTab('admin')"
+              type="button">
+        Admin
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content" id="userTabsContent">
+    <div class="tab-pane fade" [class.show]="activeTab === 'user'" [class.active]="activeTab === 'user'">
+      
+      <!-- Controls -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-3">
+         
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="input-group" style="width: 250px;">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" 
+                   class="form-control border-start-0" 
+                   placeholder="Search"
+                   [(ngModel)]="searchTerm"
+                   (input)="onSearch()">
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              {{selectedSort}}
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" (click)="setSort('Alphabetic Order')">Alphabetic Order</a></li>
+              <li><a class="dropdown-item" href="#" (click)="setSort('Date Order')">Date Order</a></li>
+              <li><a class="dropdown-item" href="#" (click)="setSort('Status Order')">Status Order</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Role</th>
+              <th scope="col">Group</th>
+              <th scope="col" style="width: 80px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers">
+             
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <!--<img *ngIf="user.avatar" 
+                       [src]="user.avatar" 
+                       [alt]="user.firstName" 
+                       class="rounded-circle" 
+                       width="32" 
+                       height="32">-->
+                  <div 
+                       class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" 
+                       style="width: 32px; height: 32px; font-size: 14px;">
+                    {{user.firstname.charAt(0).toUpperCase()}}
+                  </div>
+                  <span>{{user.firstname}}</span>
+                </div>
+              </td>
+              <td>{{user.lastname}}</td>
+              <td>
+                <a [href]="'mailto:' + user.email" 
+                   class="text-primary text-decoration-none">
+                  {{user.email}}
+                </a>
+              </td>
+              <td>
+                <span class="badge px-3 py-1"
+                   [ngClass]="{
+                        'bg-danger-subtle text-danger': user.role === 'Mute',
+                        'bg-success-subtle text-success': user.role === 'Active',
+                        'bg-secondary-subtle text-secondary': user.role === 'Deactivated'
+                      }">
+                  {{user.role}}
+                </span>
+              </td>
+              <td class="text-muted">{{user.group}}</td>
+              <td>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-secondary" 
+                          type="button" 
+                          data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" (click)="editUser(user)">Edit</a></li>
+                    <li><a class="dropdown-item"  (click)="deleteUser(user)">Delete</a></li>
+                    <li><a class="dropdown-item" (click)="viewDetails(user)">View Details</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Admin Tab -->
+    <div class="tab-pane fade" [class.show]="activeTab === 'admin'" [class.active]="activeTab === 'admin'">
+      <p class="text-muted">Admin content would go here...</p>
+    </div>
+  </div>
+</div>
+

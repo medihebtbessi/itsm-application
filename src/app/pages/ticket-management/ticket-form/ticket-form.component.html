@@ -1,0 +1,290 @@
+<!-- ticket-dashboard.component.html -->
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 sidebar">
+      <div class="d-flex align-items-center mb-4">
+        <div class="logo me-2">
+          <span class="logo-text">D</span>
+        </div>
+        <h5 class="mb-0">Dashboard</h5>
+      </div>
+      
+      <nav class="nav flex-column">
+        <a class="nav-link active" href="/create-ticket">
+          <i class="bi bi-plus-circle"></i> Create Ticket
+        </a>
+        <a class="nav-link" href="/getAllTicket"><i class="bi bi-ticket"></i> All Tickets </a>
+        <a class="nav-link" href="/tickets-assigned-to-me"><i class="bi bi-person"></i> Assigned to Me</a>
+        <a class="nav-link" href="/stats"><i class="bi bi-bar-chart"></i> Stats</a>
+        <a class="nav-link" href="/messages"><i class="bi bi-chat-dots"></i> Messages</a>
+                <a class="nav-link" href="/calendar"><i class="bi bi-calendar"></i> Calendar</a>
+
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 main-content">
+      <!-- Header -->
+      <div class="header d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="mb-1">
+            <i class="bi bi-ticket-perforated me-2"></i>
+            {{ isEditMode ? 'Edit Ticket' : 'Create New Ticket' }}
+          </h1>
+          <p class="text-muted mb-0">{{ isEditMode ? 'Update ticket information' : 'Fill in the details to create a new support ticket' }}</p>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="btn btn-outline-secondary" (click)="onCancelClick()">
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to Tickets
+          </button>
+        </div>
+      </div>
+
+      <!-- Ticket Form -->
+      <div class="ticket-form-container">
+        <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <!-- Title -->
+            <div class="col-12 mb-4">
+              <label for="title" class="form-label required">Ticket Title</label>
+              <input 
+                type="text" 
+                class="form-control form-control-lg"
+                [class.is-invalid]="isFieldInvalid('title')"
+                id="title" 
+                formControlName="title"
+                placeholder="Enter a clear and descriptive title"
+                maxlength="100">
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('title')">
+                {{ getFieldError('title') }}
+              </div>
+              <div class="form-text">
+                {{ title?.value?.length || 0 }}/100 characters
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="col-12 mb-4">
+              <label for="description" class="form-label required">Description</label>
+              <textarea 
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('description')"
+                id="description" 
+                formControlName="description"
+                rows="5"
+                placeholder="Provide a detailed description of the issue or request"
+                maxlength="500"></textarea>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
+                {{ getFieldError('description') }}
+              </div>
+              <div class="form-text">
+                {{ description?.value?.length || 0 }}/500 characters
+              </div>
+            </div>
+
+            <!-- Priority and Status Row -->
+            <div class="col-lg-6 mb-4">
+              <label for="priority" class="form-label required">Priority Level</label>
+              <select 
+                class="form-select"
+                [class.is-invalid]="isFieldInvalid('priority')"
+                id="priority" 
+                formControlName="priority">
+                <option value="" disabled>Select priority level</option>
+                <option *ngFor="let option of priorityOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('priority')">
+                {{ getFieldError('priority') }}
+              </div>
+              <!-- Priority Preview -->
+              <div class="mt-2" *ngIf="priority?.value">
+                <span class="badge badge-priority" [ngClass]="getPriorityBadgeClass(priority?.value)">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ priority?.value }}
+                </span>
+              </div>
+            </div>
+@if (isEditMode) {
+  <div class="col-lg-6 mb-4">
+              <label for="status" class="form-label required">Current Status</label>
+              <select 
+                class="form-select"
+                [class.is-invalid]="isFieldInvalid('status')"
+                id="status" 
+                formControlName="status">
+                <option value="" disabled>Select current status</option>
+                <option *ngFor="let option of statusOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('status')">
+                {{ getFieldError('status') }}
+              </div>
+              <!-- Status Preview -->
+              <div class="mt-2" *ngIf="status?.value">
+                <span class="badge badge-status" [ngClass]="getStatusBadgeClass(status?.value)">
+                  <i class="bi bi-circle-fill me-1"></i>
+                  {{ status?.value }}
+                </span>
+              </div>
+            </div>
+}
+          
+
+            <!-- Category and Type Row -->
+            <div class="col-lg-6 mb-4">
+              <label for="category" class="form-label required">Category</label>
+              <select 
+                class="form-select"
+                [class.is-invalid]="isFieldInvalid('category')"
+                id="category" 
+                formControlName="category">
+                <option value="" disabled>Select category</option>
+                <option *ngFor="let option of categoryOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('category')">
+                {{ getFieldError('category') }}
+              </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+              <label for="type" class="form-label required">Ticket Type</label>
+              <select 
+                class="form-select"
+                [class.is-invalid]="isFieldInvalid('type')"
+                id="type" 
+                formControlName="type">
+                <option value="" disabled>Select ticket type</option>
+                <option *ngFor="let option of typeOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('type')">
+                {{ getFieldError('type') }}
+              </div>
+            </div>
+
+            <!-- Resolution Notes (conditional) -->
+            <div class="col-12 mb-4" *ngIf="shouldShowResolutionNotes()">
+              <label for="resolution_notes" class="form-label">
+                <i class="bi bi-check-circle me-1"></i>
+                Resolution Notes
+                <span class="text-danger" *ngIf="status?.value === 'Resolved' || status?.value === 'Closed'">*</span>
+              </label>
+              <textarea 
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('resolution_notes')"
+                id="resolution_notes" 
+                formControlName="resolution_notes"
+                rows="4"
+                placeholder="Describe how the issue was resolved and any additional notes..."
+                maxlength="300"></textarea>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('resolution_notes')">
+                {{ getFieldError('resolution_notes') }}
+              </div>
+              <div class="form-text">
+                {{ resolution_notes?.value?.length || 0 }}/300 characters
+              </div>
+            </div>
+
+            
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <div class="d-flex gap-3">
+                  <button 
+                    type="submit" 
+                    class="btn btn-primary btn-lg"
+                    [disabled]="!ticketForm.valid">
+                    <i class="bi bi-check-circle me-2"></i>
+                    {{ isEditMode ? 'Update Ticket' : 'Create Ticket' }}
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary btn-lg" 
+                    (click)="onCancelClick()">
+                    <i class="bi bi-x-circle me-2"></i>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-4 text-end">
+                <small class="text-muted">
+                  <i class="bi bi-info-circle me-1"></i>
+                  All fields marked with * are required
+                </small>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Preview Card -->
+      <div class="preview-card" *ngIf="ticketForm.value.title || ticketForm.value.description">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="bi bi-eye me-2"></i>
+              Live Preview
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-lg-8">
+                <h6 class="card-title">
+                  <i class="bi bi-ticket-perforated me-2 text-primary"></i>
+                  {{ ticketForm.value.title || 'Untitled Ticket' }}
+                </h6>
+                <p class="card-text text-muted mb-3">
+                  {{ ticketForm.value.description || 'No description provided' }}
+                </p>
+                <div class="ticket-meta">
+                  <span class="badge bg-light text-dark me-2">
+                    <i class="bi bi-folder me-1"></i>
+                    {{ ticketForm.value.category || 'No category' }}
+                  </span>
+                  <span class="badge bg-light text-dark">
+                    <i class="bi bi-tag me-1"></i>
+                    {{ ticketForm.value.type || 'No type' }}
+                  </span>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="d-flex flex-column gap-3">
+                  <div class="preview-item" *ngIf="ticketForm.value.priority">
+                    <small class="text-muted d-block">Priority Level</small>
+                    <span class="badge badge-priority" [ngClass]="getPriorityBadgeClass(ticketForm.value.priority)">
+                      <i class="bi bi-exclamation-triangle me-1"></i>
+                      {{ ticketForm.value.priority }}
+                    </span>
+                  </div>
+                  <div class="preview-item" *ngIf="ticketForm.value.status">
+                    <small class="text-muted d-block">Current Status</small>
+                    <span class="badge badge-status" [ngClass]="getStatusBadgeClass(ticketForm.value.status)">
+                      <i class="bi bi-circle-fill me-1"></i>
+                      {{ ticketForm.value.status }}
+                    </span>
+                  </div>
+                  <div class="preview-item" *ngIf="ticketForm.value.resolution_notes">
+                    <small class="text-muted d-block">Resolution</small>
+                    <p class="small mb-0">{{ ticketForm.value.resolution_notes }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-chat-bot></app-chat-bot>

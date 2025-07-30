@@ -1,0 +1,292 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3 col-lg-2 sidebar">
+      <div class="d-flex align-items-center mb-4">
+        <div class="logo me-2">
+          <span class="logo-text">D</span>
+        </div>
+        <h5 class="mb-0">Dashboard</h5>
+      </div>
+      
+      <nav class="nav flex-column">
+ <a class="nav-link" href="/create-ticket">
+          <i class="bi bi-plus-circle"></i> Create Ticket
+        </a>        <a class="nav-link" href="/getAllTicket"><i class="bi bi-ticket"></i> All Tickets <span class="badge bg-primary"></span></a>
+        <a class="nav-link" href="/tickets-assigned-to-me"><i class="bi bi-person"></i> Assigned to Me <span class="badge bg-secondary"></span></a>
+        <a class="nav-link active" href="/stats"><i class="bi bi-bar-chart"></i> Stats</a>
+                <a class="nav-link" href="/messages"><i class="bi bi-chat-dots"></i> Messages</a>
+                        <a class="nav-link" href="/calendar"><i class="bi bi-calendar"></i> Calendar</a>
+
+
+      </nav>
+    </div>
+
+    <div class="col-md-9 col-lg-10 main-content">
+      <div class="header d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0">Dashboard Overview</h2>
+          <p class="text-muted mb-0">Monitor your ticket system performance</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-outline-primary btn-sm" (click)="refreshData()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+          </button>
+          
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="card-subtitle mb-2 text-muted">Total Tickets</h6>
+                  <h3 class="card-title mb-0 text-primary">
+                    <span *ngIf="loading.overview" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ overview.totalTickets }}
+                  </h3>
+                </div>
+                <div class="text-primary">
+                  <i class="bi bi-ticket-perforated" style="font-size: 2rem;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="card-subtitle mb-2 text-muted">Open Tickets</h6>
+                  <h3 class="card-title mb-0 text-danger">
+                    <span *ngIf="loading.overview" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ overview.openTickets }}
+                  </h3>
+                </div>
+                <div class="text-danger">
+                  <i class="bi bi-exclamation-circle" style="font-size: 2rem;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="card-subtitle mb-2 text-muted">In Progress</h6>
+                  <h3 class="card-title mb-0 text-warning">
+                    <span *ngIf="loading.overview" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ overview.inProgressTickets }}
+                  </h3>
+                </div>
+                <div class="text-warning">
+                  <i class="bi bi-clock" style="font-size: 2rem;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="card-subtitle mb-2 text-muted">Resolved</h6>
+                  <h3 class="card-title mb-0 text-success">
+                    <span *ngIf="loading.overview" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ overview.resolvedTickets }}
+                  </h3>
+                </div>
+                <div class="text-success">
+                  <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h6 class="card-subtitle mb-2 text-muted">Average Resolution Time</h6>
+                  <h4 class="card-title mb-0 text-info">
+                    <span *ngIf="loading.overview" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ formatTime(overview.averageResolutionTimeInHours) }}
+                  </h4>
+                </div>
+                <div class="text-info">
+                  <i class="bi bi-stopwatch" style="font-size: 2rem;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+<div class="row mb-4">
+  <div class="col-lg-4 mb-3">
+    <div class="card h-100 border-0 shadow-sm">
+      <div class="card-header bg-transparent border-0">
+        <h6 class="card-title mb-0">
+          <i class="bi bi-graph-up me-2"></i>Tickets by Status
+        </h6>
+      </div>
+      <div class="card-body">
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 mb-3">
+    <div class="card h-100 border-0 shadow-sm">
+      <div class="card-header bg-transparent border-0">
+        <h6 class="card-title mb-0">
+          <i class="bi bi-exclamation-triangle me-2"></i>Tickets by Priority
+        </h6>
+      </div>
+      <div class="card-body">
+        <canvas id="priorityChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4 mb-3">
+    <div class="card h-100 border-0 shadow-sm">
+      <div class="card-header bg-transparent border-0">
+        <h6 class="card-title mb-0">
+          <i class="bi bi-tags me-2"></i>Tickets by Category
+        </h6>
+      </div>
+      <div class="card-body">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <div class="row">
+        <div class="col-lg-8 mb-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+              <h6 class="card-title mb-0">
+                <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Urgent Tickets
+              </h6>
+              <small class="text-muted">{{ urgentTickets.length }} tickets</small>
+            </div>
+            <div class="card-body p-0">
+              <div *ngIf="loading.urgentTickets" class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <div *ngIf="!loading.urgentTickets" class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>Ticket ID</th>
+                      <th>Title</th>
+                      <th>Priority</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let ticket of urgentTickets">
+                      <td>
+                        <code>{{ ticket.id }}</code>
+                      </td>
+                      <td>
+                        <div class="fw-medium">{{ ticket.title }}</div>
+                        <small class="text-muted">{{ ticket.description | slice:0:50 }}...</small>
+                      </td>
+                      <td>
+                        <span class="badge" [ngClass]="getPriorityBadgeClass(ticket.priority)">
+                          {{ ticket.priority | titlecase }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge" [ngClass]="getStatusBadgeClass(ticket.status)">
+                          <i [class]="getStatusIcon(ticket.status)" class="me-1"></i>
+                          {{ ticket.status | titlecase }}
+                        </span>
+                      </td>
+                      <td>
+                        <small>{{ formatDate(ticket.createdDate!) }}</small>
+                      </td>
+                    </tr>
+                    <tr *ngIf="urgentTickets.length === 0">
+                      <td colspan="5" class="text-center text-muted py-4">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        No urgent tickets at the moment
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+              <h6 class="card-title mb-0">
+                <i class="bi bi-people me-2"></i>User Load
+              </h6>
+            </div>
+            <div class="card-body">
+              <div *ngIf="loading.userLoad" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              <div *ngIf="!loading.userLoad">
+                <div *ngFor="let user of userLoad;" class="user-load-item mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-medium">{{ user.recipientName }}</div>
+                    <small class="text-muted">{{ user.totalTickets }} total</small>
+                  </div>
+                  <div class="progress mb-2" style="height: 6px;">
+                    <div class="progress-bar bg-success" role="progressbar" 
+                         [style.width.%]="(user.resolvedTickets / user.totalTickets) * 100"
+                         [attr.aria-valuenow]="user.resolvedTickets"
+                         [attr.aria-valuemax]="user.totalTickets">
+                    </div>
+                    <div class="progress-bar bg-warning" role="progressbar" 
+                         [style.width.%]="(user.inProgressTickets / user.totalTickets) * 100"
+                         [attr.aria-valuenow]="user.inProgressTickets"
+                         [attr.aria-valuemax]="user.totalTickets">
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-between small text-muted">
+                    <span>{{ user.resolvedTickets }} resolved</span>
+                    <span>{{ user.inProgressTickets }} in progress</span>
+                  </div>
+                </div>
+                <div *ngIf="userLoad.length === 0" class="text-center text-muted py-4">
+                  <i class="bi bi-inbox me-2"></i>
+                  No user load data available
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-chat-bot></app-chat-bot>

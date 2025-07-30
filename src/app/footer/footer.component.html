@@ -1,0 +1,95 @@
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3 class="footer-title">Mon Entreprise</h3>
+      <p class="footer-description">
+        Nous sommes dédiés à fournir les meilleurs services 
+        et solutions pour nos clients. Votre satisfaction 
+        est notre priorité.
+      </p>
+      <div class="social-links">
+        <a 
+          *ngFor="let social of socialLinks" 
+          [href]="social.url" 
+          [title]="social.name"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-link"
+        >
+          <i [class]="social.icon"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-subtitle">Liens rapides</h4>
+      <ul class="footer-links">
+        <li *ngFor="let link of quickLinks">
+          <a [routerLink]="link.url" class="footer-link">
+            {{ link.name }}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-subtitle">Contact</h4>
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <a [href]="'mailto:' + contactInfo.email">
+            {{ contactInfo.email }}
+          </a>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-phone"></i>
+          <a [href]="'tel:' + contactInfo.phone">
+            {{ contactInfo.phone }}
+          </a>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{ contactInfo.address }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-subtitle">Newsletter</h4>
+      <p class="newsletter-text">
+        Abonnez-vous pour recevoir nos dernières actualités
+      </p>
+      <div class="newsletter-form">
+        <input 
+          #emailInput
+          type="email" 
+          placeholder="Votre email"
+          class="newsletter-input"
+        >
+        <button 
+          (click)="onSubscribe(emailInput.value)"
+          class="newsletter-btn"
+        >
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-content">
+      <div class="copyright">
+        <p>&copy; {{ currentYear }} Mon Entreprise. Tous droits réservés.</p>
+      </div>
+      <div class="legal-links">
+        <a 
+          *ngFor="let link of legalLinks; let last = last" 
+          [routerLink]="link.url" 
+          class="legal-link"
+        >
+          {{ link.name }}<span *ngIf="!last"> | </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

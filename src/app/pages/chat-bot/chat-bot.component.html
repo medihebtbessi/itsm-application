@@ -1,0 +1,142 @@
+<div class="chat-container">
+  <!-- Bouton flottant pour ouvrir la modal -->
+  <button 
+    type="button" 
+    class="btn chat-trigger-btn" 
+    data-bs-toggle="modal" 
+    data-bs-target="#chatModal"
+    [attr.aria-label]="'Ouvrir le chatbot'">
+    <i class="bi bi-chat-dots-fill"></i>
+  </button>
+
+  <!-- Modal Bootstrap -->
+  <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content chat-modal">
+        <!-- Header de la modal -->
+        <div class="modal-header chat-header">
+          <div class="d-flex align-items-center">
+            <div class="chat-avatar me-3">
+              <i class="bi bi-robot"></i>
+            </div>
+            <div>
+              <h5 class="modal-title mb-0" id="chatModalLabel">
+                <i class="bi bi-chat-heart-fill me-2"></i>
+                Assistant IA
+              </h5>
+              
+            </div>
+          </div>
+          <button 
+            type="button" 
+            class="btn-close btn-close-white" 
+            data-bs-dismiss="modal" 
+            aria-label="Fermer">
+          </button>
+        </div>
+
+        <!-- Corps de la modal - Zone de chat -->
+        <div class="modal-body p-0">
+          <div class="chat-messages" #chatMessages>
+            <div class="welcome-message" *ngIf="messages.length === 0">
+              <div class="text-center py-5">
+                <i class="bi bi-chat-square-dots display-1 text-primary opacity-50"></i>
+                <h6 class="mt-3 text-muted">Bonjour! Comment puis-je vous aider aujourd'hui?</h6>
+              </div>
+            </div>
+            
+            <div *ngFor="let message of messages; let i = index" 
+                 class="message-wrapper"
+                 [ngClass]="{'user-message': message.from === 'user', 'bot-message': message.from === 'bot'}">
+              
+              <!-- Message utilisateur -->
+              <div *ngIf="message.from === 'user'" class="d-flex justify-content-end mb-3">
+                <div class="message-bubble user-bubble">
+                  <div class="message-content">
+                    {{ message.text }}
+                  </div>
+                  <div class="message-time">
+                    <small class="text-muted">
+                      <i class="bi bi-check2-all"></i>
+                      {{ getCurrentTime() }}
+                    </small>
+                  </div>
+                </div>
+                <div class="avatar-wrapper ms-2">
+                  <div class="user-avatar">
+                    <i class="bi bi-person-fill"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Message bot -->
+              <div *ngIf="message.from === 'bot'" class="d-flex justify-content-start mb-3">
+                <div class="avatar-wrapper me-2">
+                  <div class="bot-avatar">
+                    <i class="bi bi-robot"></i>
+                  </div>
+                </div>
+                <div class="message-bubble bot-bubble">
+                  <div class="message-content">
+                    {{ message.text }}
+                  </div>
+                  <div class="message-time">
+                    <small class="text-muted">
+                      {{ getCurrentTime() }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Indicateur de frappe -->
+            <div *ngIf="isTyping" class="d-flex justify-content-start mb-3">
+              <div class="avatar-wrapper me-2">
+                <div class="bot-avatar">
+                  <i class="bi bi-robot"></i>
+                </div>
+              </div>
+              <div class="message-bubble bot-bubble typing-indicator">
+                <div class="typing-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer - Zone de saisie -->
+        <div class="modal-footer chat-footer">
+          <form (ngSubmit)="send()" class="chat-form w-100">
+            <div class="input-group">
+              <span class="input-group-text bg-light border-0">
+                <i class="bi bi-chat-text text-primary"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control border-0 shadow-none" 
+                [(ngModel)]="userInput" 
+                name="userInput" 
+                #messageInput
+                required 
+                placeholder="Tapez votre message..." 
+                [disabled]="isTyping"
+                (keypress)="onKeyPress($event)">
+              <button 
+                type="submit" 
+                class="btn btn-primary send-btn"
+                [disabled]="!userInput.trim() || isTyping">
+                <i class="bi bi-send-fill" *ngIf="!isTyping"></i>
+                <div class="spinner-border spinner-border-sm" role="status" *ngIf="isTyping">
+                  <span class="visually-hidden">Envoi...</span>
+                </div>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

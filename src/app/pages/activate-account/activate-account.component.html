@@ -1,0 +1,78 @@
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-6 col-lg-4">
+      
+      <!-- Success/Error Message Card -->
+      <div class="card shadow-lg border-0" *ngIf="submitted else codeForm">
+        <div class="card-body text-center p-5">
+          
+          <!-- Success State -->
+          <div *ngIf="isOkay ">
+            <div class="mb-4">
+              <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+            </div>
+            <h2 class="card-title text-success mb-3">Activation Réussie!</h2>
+            <p class="card-text text-muted mb-4">
+              Votre compte a été activé avec succès. Vous pouvez maintenant vous connecter.
+            </p>
+            <button class="btn btn-success btn-lg px-4 py-2 rounded-pill" 
+                    (click)="redirectToLogin()">
+              <i class="bi bi-box-arrow-in-right me-2"></i>
+              Aller à la connexion
+            </button>
+          </div>
+          
+          <!-- Error State -->
+         
+        </div>
+      </div>
+      
+      <!-- Code Input Form -->
+      <ng-template #codeForm>
+        <div class="card shadow-lg border-0">
+          <div class="card-header bg-primary text-white text-center py-4 border-0">
+            <i class="bi bi-shield-lock-fill mb-2" style="font-size: 2.5rem;"></i>
+            <h2 class="card-title mb-0 fw-bold">Activation du Compte</h2>
+          </div>
+          <div class="card-body p-5">
+            <div class="text-center mb-4">
+              <p class="card-text text-muted mb-4">
+                Saisissez le code d'activation à 6 chiffres que vous avez reçu par email
+              </p>
+              
+              <!-- Loading Spinner (optional, shown during API call) -->
+              <div class="mb-3" *ngIf="isLoading">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Vérification en cours...</span>
+                </div>
+                <p class="text-muted mt-2">Vérification du code...</p>
+              </div>
+              
+              <!-- Code Input Component -->
+              <div class="code-input-container mb-4" *ngIf="!isLoading">
+                <code-input [isCodeHidden]="false"
+                           [codeLength]="6"
+                           [code]="'number'"
+                           (codeChanged)="onCodeCompleted($event)"
+                           class="custom-code-input">
+                </code-input>
+              </div>
+              
+              <!-- Helper Text -->
+              <div class="mt-4">
+                <small class="text-muted">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Vous n'avez pas reçu le code? 
+                  <a href="#" class="text-decoration-none" (click)="resendCode()">
+                    Renvoyer le code
+                  </a>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      
+    </div>
+  </div>
+</div>

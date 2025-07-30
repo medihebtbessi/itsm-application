@@ -1,0 +1,44 @@
+<div *ngIf="isVisible" class="dialog-overlay">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <h3>Add picture to your ticket</h3>
+    </div>
+   
+    <div class="dialog-content">
+      <label for="fileUpload">Select picture</label>
+     
+      <input
+        type="file"
+        id="fileUpload"
+       
+        (change)="onFileSelected($event)"
+        class="file-input">
+     
+      <!-- Affichage du fichier sélectionné -->
+      <div *ngIf="selectedFile" class="selected-file">
+        <p>Fichier sélectionné: {{ selectedFile.name }}</p>
+      </div>
+     
+      <div class="checkbox-container">
+        <input
+          type="checkbox"
+          id="dontShowAgain"
+          [(ngModel)]="dontShowAgain">
+        <label for="dontShowAgain">Do not show this dialog anymore</label>
+      </div>
+    </div>
+   
+    <div class="dialog-actions">
+      <button type="button" (click)="onCancel()" class="btn-cancel">
+        Cancel
+      </button>
+      <button 
+        type="button" 
+        (click)="onConfirm()" 
+        class="btn-confirm"
+        [disabled]="!selectedFile">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>

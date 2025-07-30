@@ -1,0 +1,88 @@
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="bi bi-file-earmark-bar-graph me-2"></i>
+    Générer un rapport
+  </button>
+  
+  <ul class="dropdown-menu shadow-lg border-0" style="min-width: 320px;">
+    <!-- Options de rapport -->
+    <li>
+      <button class="dropdown-item py-2 px-3 d-flex align-items-center" (click)="onGenerateMonthlyReport()">
+        <i class="bi bi-calendar-month text-primary me-3"></i>
+        <div>
+          <div class="fw-medium">Rapport mensuel</div>
+          <small class="text-muted">Analyse du mois en cours</small>
+        </div>
+      </button>
+    </li>
+    
+    <li>
+      <button class="dropdown-item py-2 px-3 d-flex align-items-center" (click)="onShowCustomReportForm()">
+        <i class="bi bi-calendar-range text-success me-3"></i>
+        <div>
+          <div class="fw-medium">Rapport personnalisé</div>
+          <small class="text-muted">Choisir une période</small>
+        </div>
+      </button>
+    </li>
+    
+   <!-- <li>
+      <button class="dropdown-item py-2 px-3 d-flex align-items-center" (click)="onQuickAnalysis()">
+        <i class="bi bi-lightning-charge text-warning me-3"></i>
+        <div>
+          <div class="fw-medium">Analyse rapide</div>
+          <small class="text-muted">Résumé instantané</small>
+        </div>
+      </button>
+    </li>-->
+    
+    <!-- Formulaire de dates personnalisées -->
+    <li *ngIf="showDatePickers">
+      <hr class="dropdown-divider my-2">
+      <div class="px-3 py-2">
+        <div class="mb-3">
+          <label class="form-label small text-muted fw-medium">
+            <i class="bi bi-calendar-event me-1"></i>
+            Date de début
+          </label>
+          <input 
+            type="datetime-local" 
+            [(ngModel)]="startDate" 
+            class="form-control form-control-sm" 
+            placeholder="Sélectionner la date de début"
+          />
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label small text-muted fw-medium">
+            <i class="bi bi-calendar-check me-1"></i>
+            Date de fin
+          </label>
+          <input 
+            type="datetime-local" 
+            [(ngModel)]="endDate" 
+            class="form-control form-control-sm" 
+            placeholder="Sélectionner la date de fin"
+          />
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button 
+            class="btn btn-success btn-sm flex-fill" 
+            (click)="onValidateCustomReport()"
+            [disabled]="!startDate || !endDate"
+          >
+            <i class="bi bi-check-circle me-1"></i>
+            Valider
+          </button>
+          <button 
+            class="btn btn-outline-secondary btn-sm" 
+            (click)="reset()"
+          >
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

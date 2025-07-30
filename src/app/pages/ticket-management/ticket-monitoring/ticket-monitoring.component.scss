@@ -1,0 +1,172 @@
+// Styles personnalisés pour le monitoring des tickets
+.hover-shadow {
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+// Timeline styles
+.timeline {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #007bff, #6f42c1);
+    z-index: 1;
+  }
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 60px;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 20px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border: 3px solid #007bff;
+    border-radius: 50%;
+    z-index: 2;
+  }
+  
+  &:nth-child(even)::before {
+    border-color: #6f42c1;
+  }
+  
+  &:nth-child(3n)::before {
+    border-color: #28a745;
+  }
+}
+
+// Animation d'entrée pour les nouveaux messages
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timeline-item:first-child {
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+// Styles pour les badges
+.badge {
+  font-size: 0.75em;
+  
+  &.bg-light {
+    color: #495057 !important;
+    border: 1px solid #dee2e6;
+  }
+}
+
+// Styles pour les cartes de statistiques
+.card {
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// Styles pour les détails techniques
+details {
+  summary {
+    cursor: pointer;
+    user-select: none;
+    
+    &:hover {
+      color: #007bff !important;
+    }
+  }
+}
+
+// Styles pour les alertes
+.alert {
+  .bi {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Styles pour les icônes de statut
+.bi-wifi::before {
+  color: #28a745;
+}
+
+.bi-wifi-off::before {
+  color: #dc3545;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .timeline {
+    &::before {
+      left: 10px;
+    }
+  }
+  
+  .timeline-item {
+    padding-left: 40px;
+    
+    &::before {
+      left: 1px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+  
+  .card-body {
+    padding: 1rem 0.75rem;
+  }
+}
+
+// Styles pour les messages vides
+.text-center {
+  .display-1 {
+    opacity: 0.3;
+  }
+}
+
+// Amélioration des couleurs Bootstrap
+.bg-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3) !important;
+}
+
+.bg-success {
+  background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+}
+
+.bg-warning {
+  background: linear-gradient(135deg, #ffc107, #e0a800) !important;
+}
+
+.bg-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333) !important;
+}

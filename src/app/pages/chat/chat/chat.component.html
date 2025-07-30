@@ -1,0 +1,212 @@
+<div class="container-fluid p-0">
+  <div class="row g-0">
+    <div class="col-md-3 col-lg-2 dashboard-sidebar">
+      <div class="d-flex align-items-center mb-4">
+        <div class="logo me-2">
+          <span class="logo-text">D</span>
+        </div>
+        <h5 class="mb-0">Dashboard</h5>
+      </div>
+      
+      <nav class="nav flex-column">
+        <a class="nav-link" href="/create-ticket">
+          <i class="bi bi-plus-circle"></i> Create Ticket
+        </a>
+        <a class="nav-link" href="/getAllTicket">
+          <i class="bi bi-ticket"></i> All Tickets
+        </a>
+        <a class="nav-link" href="/tickets-assigned-to-me">
+          <i class="bi bi-person"></i> Assigned to Me
+        </a>
+        <a class="nav-link" href="/stats">
+          <i class="bi bi-bar-chart"></i> Stats
+        </a>
+        <a class="nav-link active" href="/messages">
+          <i class="bi bi-chat-dots"></i> Messages
+        </a>
+                <a class="nav-link" href="/calendar"><i class="bi bi-calendar"></i> Calendar</a>
+
+      </nav>
+    </div>
+    
+    <div class="col-md-9 col-lg-10 main-content">
+      <div class="chat-container">
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-header">
+            <div class="search-container">
+              <i class="bi bi-search search-icon"></i>
+              <input type="text" class="form-control search-input" placeholder="Search contacts...">
+            </div>
+          </div>
+          
+          <!-- Panel pour nouvelle discussion -->
+          <div class="contacts-list" *ngIf="searchNewContact">
+            <div class="contact-header">
+              <h6>Nouveau chat</h6>
+              
+            </div>
+            <div 
+              class="contact-item" 
+              *ngFor="let contact of contacts; let i = index"
+              (click)="startChatWith(contact)">
+              
+              <div class="contact-avatar" [style.background-color]="getAvatarColor(i)">
+                <span>{{ (contact.firstname || '')[0] | uppercase}}{{ (contact.lastname || '')[0] |uppercase}}</span>
+                <div class="online-indicator" *ngIf="true"></div>
+              </div>
+              
+              <div class="contact-info">
+                <div class="contact-header">
+                  <h6 class="contact-name">{{ contact.firstname }} {{ contact.lastname }}</h6>
+                </div>
+                <p class="contact-message">{{ contact.email }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Liste des chats existants -->
+          <div class="contacts-list" *ngIf="!searchNewContact">
+            <div 
+              class="contact-item" 
+              *ngFor="let chat of chats; let i = index"
+              [class.active]="chat.id === selectedChat?.id"
+              (click)="openChat(chat)">
+              
+              <div class="contact-avatar" [style.background-color]="getAvatarColor(i)">
+              <span>{{ (chat.name?.[0]  || 'U')|uppercase }}</span>
+                <div class="online-indicator" *ngIf="chat.recipientOnline"></div>
+              </div>
+              
+              <div class="contact-info">
+                <div class="contact-header">
+                  <h6 class="contact-name">{{ chat.name }}</h6>
+                  <small class="contact-time">{{ chat.lastMessageTime | date:'short' }}</small>
+                </div>
+                <p class="contact-message">{{ chat.lastMessage }}</p>
+              </div>
+              
+              <div class="unread-badge" *ngIf="chat.unreadCount && chat.unreadCount > 0">
+                {{ chat.unreadCount }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-area" *ngIf="selectedChat">
+          <div class="chat-header">
+            <div class="chat-contact-info">
+              <div class="chat-avatar" [style.background-color]="getAvatarColor(0)">
+                <span><span>{{ selectedChat.name?.[0]  }}</span>
+</span>
+              </div>
+              <div class="chat-contact-details">
+                <h6 class="mb-0">{{ selectedChat.name }}</h6>
+                <small class="text-muted" *ngIf="selectedChat.recipientOnline">En ligne</small>
+                <small class="text-muted" *ngIf="!selectedChat.recipientOnline">Hors ligne</small>
+              </div>
+            </div>
+            <div class="chat-actions">
+              <button class="btn btn-link chat-action-btn">
+                <i class="bi bi-check-circle"></i>
+                Marquer comme résolu
+              </button>
+              <button class="btn btn-link chat-action-btn">
+                <i class="bi bi-three-dots"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="messages-container" #messagesContainer>
+            <div 
+              class="message" 
+              *ngFor="let message of chatMessages"
+              [class.message-sent]="isSelfMessage(message)"
+              [class.message-received]="!isSelfMessage(message)">
+              
+              <div class="message-avatar" *ngIf="!isSelfMessage(message)">
+                <div class="avatar-circle" [style.background-color]="getAvatarColor(0)">
+<span>{{ selectedChat.name?.[0] || 'U' }}</span>
+                </div>
+              </div>
+              
+              <div class="message-content">
+                <div class="message-bubble" *ngIf="message.type === 'TEXT'">
+                  {{ message.content }}
+                </div>
+                <div class="message-bubble" *ngIf="message.type === 'IMAGE'">
+                  <img [src]="'data:image/jpeg;base64,' + message.media?.[0]" 
+                       alt="Image" 
+                       class="message-image"
+                       *ngIf="message.media && message.media.length > 0">
+                  <p *ngIf="!message.media || message.media.length === 0">{{ message.content }}</p>
+                </div>
+                <small class="message-time">{{ message.createdAt | date:'short' }}</small>
+              </div>
+              
+              <div class="message-avatar" *ngIf="isSelfMessage(message)">
+                <div class="avatar-circle user-avatar">
+                  {{ connectedUser?.firstname?.[0] || 'U' }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="message-input-container">
+            <div class="input-group">
+              <input 
+                type="file" 
+                #fileInput 
+                (change)="uploadMedia($event.target)"
+                accept="image/*"
+                style="display: none;">
+              
+              <button 
+                class="btn btn-outline-secondary" 
+                (click)="fileInput.click()"
+                type="button">
+                <i class="bi bi-paperclip"></i>
+              </button>
+              
+              <input 
+                type="text" 
+                class="form-control message-input" 
+                placeholder="Tapez votre message..."
+                [(ngModel)]="messageContent"
+                (keydown)="keyDown($event)"
+                #messageInput>
+              
+              <button 
+                class="btn btn-outline-secondary" 
+                (click)="showEmojis = !showEmojis"
+                type="button">
+                <i class="bi bi-emoji-smile"></i>
+              </button>
+              
+              <button 
+                class="btn btn-primary send-btn" 
+                (click)="sendMessage()"
+                [disabled]="!messageContent.trim()">
+                <i class="bi bi-send"></i>
+              </button>
+            </div>
+            
+            <!-- Sélecteur d'émojis (à implémenter avec une librairie) -->
+            <div class="emoji-picker" *ngIf="showEmojis">
+              <!-- Placeholder pour le sélecteur d'émojis -->
+              <p>Sélecteur d'émojis à implémenter</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Message par défaut quand aucun chat n'est sélectionné -->
+        <div class="chat-area d-flex align-items-center justify-content-center" *ngIf="!selectedChat">
+          <div class="text-center">
+            <i class="bi bi-chat-dots display-1 text-muted"></i>
+            <h5 class="mt-3">Sélectionnez une conversation</h5>
+            <p class="text-muted">Choisissez une conversation dans la liste ou créez-en une nouvelle</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

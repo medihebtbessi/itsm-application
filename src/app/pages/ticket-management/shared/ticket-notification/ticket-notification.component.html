@@ -1,0 +1,27 @@
+<div class="position-relative">
+  <button class="btn btn-light position-relative" (click)="toggle()">
+    <i class="bi bi-bell"></i>
+    <span *ngIf="notifications.length" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+      {{ notifications.length }}
+    </span>
+  </button>
+
+  <div *ngIf="isOpen" class="dropdown-menu show p-2 shadow-sm" style="width: 350px; max-height: 500px; overflow-y: auto;">
+    <h6 class="dropdown-header">Notifications récentes</h6>
+
+    <div *ngIf="notifications.length === 0" class="text-center text-muted">
+      Aucune notification
+    </div>
+
+    <div *ngFor="let notif of notifications" class="dropdown-item small border-bottom mb-1">
+      <strong>{{ notif.op || 'Nouvelle notification' }}</strong> :
+      {{ notif.title || '(Sans titre)' }}
+      <br />
+      <span class="badge bg-secondary me-1">
+        {{ notif.priority || 'N/A' }}
+      </span>
+      <br />
+      <small class="text-muted">{{ formatDate(notif.timestamp) }}</small>
+    </div>
+  </div>
+</div>

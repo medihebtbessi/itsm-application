@@ -1,0 +1,179 @@
+<!-- solution-search.component.html -->
+<div class="solution-search-container">
+  <div class="container-fluid py-4">
+    
+    <!-- En-tête -->
+    <div class="header-section text-center mb-5">
+      <a href="/tickets-assigned-to-me" class="btn btn-primary btn-lg px-5"><i  class="fas fa-align-right me-2"></i>Back to tickets</a>
+      <h1 class="display-5 fw-bold text-white mb-3">
+        <i class="fab fa-stack-overflow me-3"></i>
+        Recherche de Solutions ITSM
+      </h1>
+      <p class="lead text-white-50">
+        Trouvez des solutions à vos problèmes techniques sur Stack Overflow
+      </p>
+    </div>
+
+    <!-- Formulaire de ticket -->
+    <div class="row justify-content-center mb-4">
+      <div class="col-lg-8">
+        <div class="card ticket-card shadow-lg">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+              <i class="fas fa-ticket-alt me-2"></i>
+              Détails du Ticket
+            </h4>
+          </div>
+          <div class="card-body p-4">
+            <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()">
+              
+              <!-- Titre -->
+              <div class="mb-4">
+                <label for="title" class="form-label fw-bold">
+                  <i class="fas fa-heading text-primary me-2"></i>
+                  Titre du Ticket
+                </label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="titleControl?.invalid && titleControl?.touched"
+                  id="title"
+                  formControlName="title"
+                  placeholder="Ex: Erreur 403 lors de l'appel à une API sécurisée">
+                <div *ngIf="titleControl?.invalid && titleControl?.touched" class="invalid-feedback">
+                  Le titre est obligatoire
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-4">
+                <label for="description" class="form-label fw-bold">
+                  <i class="fas fa-align-left text-primary me-2"></i>
+                  Description du Ticket
+                </label>
+                <textarea 
+                  class="form-control"
+                  [class.is-invalid]="descriptionControl?.invalid && descriptionControl?.touched"
+                  id="description"
+                  formControlName="description"
+                  rows="4"
+                  placeholder="Décrivez en détail le problème rencontré..."></textarea>
+                <div *ngIf="descriptionControl?.invalid && descriptionControl?.touched" class="invalid-feedback">
+                  La description est obligatoire
+                </div>
+              </div>
+
+              <!-- Bouton de recherche -->
+              <div class="text-center">
+                <button 
+                  type="submit" 
+                  class="btn btn-primary btn-lg px-5"
+                  [disabled]="isLoading">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <i *ngIf="!isLoading" class="fas fa-search me-2"></i>
+                  {{ isLoading ? 'Recherche en cours...' : 'Rechercher des Solutions' }}
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section de chargement -->
+    <div *ngIf="isLoading" class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body text-center py-5">
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+              <span class="visually-hidden">Chargement...</span>
+            </div>
+            <h5>Recherche en cours...</h5>
+            <p class="text-muted">Génération de la requête et recherche sur Stack Overflow</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="errorMessage && hasSearched" class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <strong>Erreur :</strong> {{ errorMessage }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Résultats -->
+    <div *ngIf="hasSearched && !isLoading && solutions.length > 0" class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card results-card shadow-lg">
+          <div class="card-header results-header text-white">
+            <h4 class="mb-1">
+              <i class="fab fa-stack-overflow me-2"></i>
+              Solutions trouvées ({{ solutions.length }})
+            </h4>
+            <small>Cliquez sur les liens pour voir les solutions complètes</small>
+          </div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+              <div 
+                *ngFor="let solution of solutions; let i = index" 
+                class="list-group-item solution-item"
+                (click)="openSolution(solution.link)">
+                
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1 me-3">
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="badge bg-secondary me-2">{{ i + 1 }}</span>
+                      <h6 class="mb-0 solution-title">{{ solution.title }}</h6>
+                      <i class="fas fa-external-link-alt ms-2 text-muted small"></i>
+                    </div>
+                    <p class="text-muted mb-2 small">
+                      <i class="fab fa-stack-overflow me-1"></i>
+                      Cliquez pour voir la solution complète sur Stack Overflow
+                    </p>
+                  </div>
+                </div>
+                
+                <div class="d-flex gap-2">
+                  <span class="badge bg-warning text-dark">
+                    <i class="fas fa-thumbs-up me-1"></i>
+                    Score: {{ solution.score }}
+                  </span>
+                  <span class="badge bg-success">
+                    <i class="fas fa-comments me-1"></i>
+                    {{ solution.answer_count }} réponse{{ +solution.answer_count > 1 ? 's' : '' }}
+                  </span>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aucun résultat -->
+    <div *ngIf="hasSearched && !isLoading && solutions.length === 0 && !errorMessage" class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body text-center py-5">
+            <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">Aucune solution trouvée</h4>
+            <p class="text-muted">
+              Essayez de reformuler votre problème ou d'utiliser des mots-clés différents.
+            </p>
+            <button class="btn btn-outline-primary" (click)="ticketForm.reset()">
+              <i class="fas fa-redo me-2"></i>
+              Nouvelle recherche
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
