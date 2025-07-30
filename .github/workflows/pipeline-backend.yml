@@ -90,6 +90,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
+      - name: Debug - list root files
+        run: ls -la
 
       - name: Extract project version
         id: extract_version
