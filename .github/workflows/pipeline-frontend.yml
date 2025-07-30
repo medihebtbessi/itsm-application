@@ -18,7 +18,7 @@ jobs:
       - name: Extract project version
         id: extract_version
         run: |
-          
+          cd itsm-ui
           echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
 
       - name: Login to DockerHub
@@ -31,7 +31,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: itsm-ui
-          file: docker/frontend/Dockerfile
+          file: Dockerfile
           push: true
           platforms: linux/amd64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/itsm-ui:latest,${{ secrets.DOCKERHUB_USERNAME }}/itsm-ui:${{ steps.extract_version.outputs.VERSION }}
