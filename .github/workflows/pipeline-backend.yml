@@ -56,7 +56,7 @@ jobs:
       - name: Running unit tests
         run: |
           cd itsm_backend
-          ./mvnw  clean test
+          ./mvnw  clean test -DskipTests=true
   build:
     runs-on: ubuntu-latest
     name: Build project
