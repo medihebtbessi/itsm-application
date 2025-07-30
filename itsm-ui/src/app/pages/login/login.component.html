@@ -1,0 +1,123 @@
+<!-- login.component.html -->
+<div class="login-wrapper">
+  <!-- Floating particles for animation -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container-fluid h-100">
+    <div class="row h-100 align-items-center justify-content-center">
+      <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+        
+        <!-- Login Card -->
+        <div class="card login-card shadow-lg border-0">
+          <div class="card-body p-4 p-md-5">
+            
+            <!-- Thales Badge -->
+            <div class="thales-badge mb-4">
+              <i class="bi bi-shield-check me-2"></i>
+              <span>Thales Partner</span>
+            </div>
+
+            <!-- Logo Section -->
+            <div class="logo-section text-center mb-4">
+              <div class="company-logo mx-auto mb-3">
+                <img src="/wevioo_logo-fotor-20250615113642.png" alt="Wevioo Logo" class="img-fluid">
+              </div>
+              <h1 class="company-name mb-1">Wevioo</h1>
+              <p class="company-subtitle text-muted mb-0">IT Service Management</p>
+            </div>
+
+            <!-- Login Title -->
+            <h3 class="login-title text-center mb-4">Connexion</h3>
+
+           
+
+            <!-- Login Form -->
+            <form #loginForm="ngForm" (ngSubmit)="login()" novalidate>
+              
+              <!-- Email Input -->
+              <div class="mb-3">
+                <label for="email" class="form-label fw-medium">Adresse email</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="bi bi-envelope text-muted"></i>
+                  </span>
+                  <input 
+                    [(ngModel)]="authRequest.email"
+                    name="email"
+                    type="email"
+                    class="form-control border-start-0 ps-0"
+                    [class.is-invalid]="getEmailError() !== ''"
+                    id="email"
+                    placeholder="nom@exemple.com"
+                    required
+                    (blur)="onEmailBlur()"
+                    #email="ngModel">
+                </div>
+                <div class="invalid-feedback d-block" *ngIf="getEmailError() !== ''">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  {{ getEmailError() }}
+                </div>
+              </div>
+
+              <!-- Password Input -->
+              <div class="mb-4">
+                <label for="password" class="form-label fw-medium">Mot de passe</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="bi bi-lock text-muted"></i>
+                  </span>
+                  <input 
+                    [(ngModel)]="authRequest.password"
+                    name="password"
+                    type="password"
+                    class="form-control border-start-0 ps-0"
+                    [class.is-invalid]="getPasswordError() !== ''"
+                    id="password"
+                    placeholder="Votre mot de passe"
+                    required
+                    (blur)="onPasswordBlur()"
+                    #password="ngModel">
+                </div>
+                <div class="invalid-feedback d-block" *ngIf="getPasswordError() !== ''">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  {{ getPasswordError() }}
+                </div>
+              </div>
+
+              <!-- Login Actions -->
+              <div class="d-grid gap-3">
+                <!-- Primary Login Button -->
+                <button 
+                  type="submit"
+                  class="btn btn-primary btn-lg py-3"
+                  [disabled]="!isFormValid() || isLoading">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <i *ngIf="!isLoading" class="bi bi-box-arrow-in-right me-2"></i>
+                  {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
+                </button>
+
+                <!-- Forgot Password -->
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary"
+                  (click)="forgotPassword()">
+                  <i class="bi bi-key me-2"></i>
+                  Mot de passe oublié ?
+                </button>
+
+               
+              </div>
+            </form>
+
+           
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

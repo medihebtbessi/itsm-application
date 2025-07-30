@@ -1,0 +1,140 @@
+// Styles personnalisés pour le composant d'activation
+.min-vh-100 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card {
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+}
+
+.card-header {
+  border-radius: 1rem 1rem 0 0 !important;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+}
+
+// Styles pour le code input
+.code-input-container {
+  ::ng-deep {
+    .code-input {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      
+      input {
+        width: 50px !important;
+        height: 60px !important;
+        font-size: 1.5rem !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 0.5rem !important;
+        background-color: #f8f9fa !important;
+        transition: all 0.3s ease !important;
+        
+        &:focus {
+          border-color: #007bff !important;
+          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+          background-color: white !important;
+        }
+        
+        &:hover {
+          border-color: #007bff !important;
+        }
+      }
+    }
+  }
+}
+
+// Animation pour les icônes
+.bi-check-circle-fill,
+.bi-x-circle-fill,
+.bi-shield-lock-fill {
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Styles pour les boutons
+.btn {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  
+  &:hover {
+    background: linear-gradient(135deg, #218838 0%, #1ea180 100%);
+  }
+}
+
+.btn-outline-danger {
+  &:hover {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border-color: #dc3545;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .card-body {
+    padding: 2rem !important;
+  }
+  
+  .code-input-container ::ng-deep .code-input input {
+    width: 40px !important;
+    height: 50px !important;
+    font-size: 1.2rem !important;
+  }
+}
+
+// Animation fade-in pour les alertes
+.alert {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Spinner personnalisé
+.spinner-border {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

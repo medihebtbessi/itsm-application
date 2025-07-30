@@ -1,0 +1,56 @@
+ .modal {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .modal-title {
+      font-size: 1.1rem;
+      color: #212529;
+    }
+    
+    .text-muted {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    .btn {
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 8px 20px;
+    }
+    
+    .btn-light {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      color: #6c757d;
+    }
+    
+    .btn-light:hover {
+      background-color: #e9ecef;
+      border-color: #d3d6d9;
+    }
+    
+    .btn-primary {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    
+    .btn-primary:hover {
+      background-color: #0b5ed7;
+      border-color: #0a58ca;
+    }
+    
+    .form-check-input:checked {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    
+    .form-check-label {
+      font-size: 0.9rem;
+      color: #495057;
+    }

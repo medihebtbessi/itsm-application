@@ -1,0 +1,262 @@
+<!-- register.component.html -->
+<div class="register-wrapper">
+  <!-- Floating particles for animation -->
+  <div class="floating-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container-fluid h-100">
+    <div class="row h-100 align-items-center justify-content-center">
+      <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+        
+        <!-- Register Card -->
+        <div class="card register-card shadow-lg border-0">
+          <div class="card-body p-4 p-md-5">
+            
+            <!-- Logo Section -->
+            <div class="logo-section text-center mb-4">
+              <div class="company-logo mx-auto mb-3">
+                <img src="/wevioo_logo-fotor-20250615113642.png" alt="Wevioo Logo" class="img-fluid">
+              </div>
+              <h1 class="company-name mb-1">Wevioo</h1>
+              <p class="company-subtitle text-muted mb-0">IT Service Management</p>
+            </div>
+
+            <!-- Register Title -->
+            <h3 class="register-title text-center mb-4">
+              <i class="bi bi-person-plus-fill me-2"></i>
+              Créer un compte
+            </h3>
+
+           
+
+            <!-- Registration Form -->
+            <form #registerForm="ngForm" (ngSubmit)="register()" novalidate>
+              
+              <!-- Name Fields Row -->
+              <div class="row">
+                <!-- First Name -->
+                <div class="col-md-6 mb-3">
+                  <label for="firstname" class="form-label fw-medium">
+                    <i class="bi bi-person me-1"></i>
+                    Prénom
+                  </label>
+                  <input 
+                    [(ngModel)]="registerRequest.firstname"
+                    type="text"
+                    class="form-control"
+                    id="firstname"
+                    placeholder="Votre prénom"
+                    name="firstname"
+                    required
+                    #firstname="ngModel">
+                  <div class="invalid-feedback d-block" *ngIf="firstname.invalid && firstname.touched">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    Le prénom est requis
+                  </div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="col-md-6 mb-3">
+                  <label for="lastname" class="form-label fw-medium">
+                    <i class="bi bi-person me-1"></i>
+                    Nom
+                  </label>
+                  <input 
+                    [(ngModel)]="registerRequest.lastname"
+                    type="text"
+                    class="form-control"
+                    id="lastname"
+                    placeholder="Votre nom"
+                    name="lastname"
+                    required
+                    #lastname="ngModel">
+                  <div class="invalid-feedback d-block" *ngIf="lastname.invalid && lastname.touched">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    Le nom est requis
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label fw-medium">
+                  <i class="bi bi-envelope me-1"></i>
+                  Adresse email
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="bi bi-envelope text-muted"></i>
+                  </span>
+                  <input 
+                    [(ngModel)]="registerRequest.email"
+                    type="email"
+                    class="form-control border-start-0 ps-0"
+                    id="email"
+                    placeholder="nom@exemple.com"
+                    name="email"
+                    required
+                    email
+                    #email="ngModel">
+                </div>
+                <div class="invalid-feedback d-block" *ngIf="email.invalid && email.touched">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  <span *ngIf="email.errors?.['required']">L'email est requis</span>
+                  <span *ngIf="email.errors?.['email']">Format d'email invalide</span>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="mb-4">
+                <label for="password" class="form-label fw-medium">
+                  <i class="bi bi-lock me-1"></i>
+                  Mot de passe
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="bi bi-lock text-muted"></i>
+                  </span>
+                  <input 
+                    [(ngModel)]="registerRequest.password"
+                    [type]="showPassword ? 'text' : 'password'"
+                    class="form-control border-start-0 ps-0"
+                    id="password"
+                    placeholder="Votre mot de passe"
+                    name="password"
+                    required
+                    minlength="6"
+                    #password="ngModel">
+                  <button 
+                    class="btn btn-outline-secondary border-start-0"
+                    type="button"
+                    (click)="togglePasswordVisibility()">
+                    <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+                  </button>
+                </div>
+                <div class="invalid-feedback d-block" *ngIf="password.invalid && password.touched">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  <span *ngIf="password.errors?.['required']">Le mot de passe est requis</span>
+                  <span *ngIf="password.errors?.['minlength']">Le mot de passe doit contenir au moins 6 caractères</span>
+                </div>
+              </div>
+
+              <!-- Role Selection -->
+              <div class="mb-4">
+                <label class="form-label fw-medium d-block mb-3">
+                  <i class="bi bi-briefcase me-1"></i>
+                  Sélectionner votre rôle
+                </label>
+                <div class="role-selection">
+                  <div class="role-option">
+                    <input 
+                      [(ngModel)]="registerRequest.role"
+                      type="radio"
+                      class="form-check-input"
+                      id="engineer"
+                      value="ENGINEER"
+                      name="role"
+                      required>
+                    <label class="role-label" for="engineer">
+                      <div class="role-icon">
+                        <i class="bi bi-code-slash"></i>
+                      </div>
+                      <div class="role-info">
+                        <h6 class="role-title">Ingénieur</h6>
+                        <p class="role-description">Développement et support technique</p>
+                      </div>
+                    </label>
+                  </div>
+                  
+                  <div class="role-option">
+                    <input 
+                      [(ngModel)]="registerRequest.role"
+                      type="radio"
+                      class="form-check-input"
+                      id="manager"
+                      value="MANAGER"
+                      name="role"
+                      required>
+                    <label class="role-label" for="manager">
+                      <div class="role-icon">
+                        <i class="bi bi-people-fill"></i>
+                      </div>
+                      <div class="role-info">
+                        <h6 class="role-title">Manager</h6>
+                        <p class="role-description">Gestion d'équipe et projets</p>
+                      </div>
+                    </label>
+                  </div>
+
+
+                   <div class="role-option">
+                    <input 
+                      [(ngModel)]="registerRequest.role"
+                      type="radio"
+                      class="form-check-input"
+                      id="user"
+                      value="USER"
+                      name="role"
+                      required>
+                    <label class="role-label" for="user">
+                      <div class="role-icon">
+                        <i class="bi bi-person"></i>
+                      </div>
+                      <div class="role-info">
+                        <h6 class="role-title">User</h6>
+                        <p class="role-description">Ajouter nouveau ticket</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Group Selection - CORRIGÉ -->
+              <div class="mb-4">
+                <label for="group" class="form-label fw-medium">
+                  <i class="bi bi-collection me-1"></i>
+                  Groupe actuel
+                </label>
+                <div class="group-input-wrapper">
+                  <i class="bi bi-collection group-icon"></i>
+                  <select 
+                    class="form-select"
+                    id="group" 
+                    name="group"
+                    [(ngModel)]="registerRequest.group"
+                    required
+                    #group="ngModel">
+                    <option value="" disabled>Sélectionner votre groupe</option>
+                    <option *ngFor="let option of groupOptions" [value]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                </div>
+                <div class="invalid-feedback d-block" *ngIf="group.invalid && group.touched">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  Le groupe est requis
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid mb-4">
+                <button 
+                  type="submit"
+                  class="btn btn-primary btn-lg py-3"
+                  [disabled]="!registerForm.valid || isLoading">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  <i *ngIf="!isLoading" class="bi bi-person-plus me-2"></i>
+                  {{ isLoading ? 'Création en cours...' : 'Créer mon compte' }}
+                </button>
+              </div>
+
+             
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,135 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-ticket-alt"></i>
+        {{ mode === 'create' ? 'Créer un ticket' : 'Modifier le ticket' }}
+      </h2>
+      <button class="close-btn" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="modal-form">
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label for="title" class="form-label">
+            <i class="fas fa-heading"></i>
+            Titre *
+          </label>
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            class="form-input"
+            [class.error]="ticketForm.get('title')?.invalid && ticketForm.get('title')?.touched"
+            placeholder="Titre du ticket"
+          >
+          <div class="error-message" *ngIf="getFieldError('title')">
+            {{ getFieldError('title') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label for="description" class="form-label">
+            <i class="fas fa-align-left"></i>
+            Description *
+          </label>
+          <textarea
+            id="description"
+            formControlName="description"
+            class="form-textarea"
+            [class.error]="ticketForm.get('description')?.invalid && ticketForm.get('description')?.touched"
+            placeholder="Description détaillée du problème ou de la demande"
+            rows="4"
+          ></textarea>
+          <div class="error-message" *ngIf="getFieldError('description')">
+            {{ getFieldError('description') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="priority" class="form-label">
+            <i class="fas fa-exclamation-triangle"></i>
+            Priorité *
+          </label>
+          <select
+            id="priority"
+            formControlName="priority"
+            class="form-select priority-select"
+          >
+            <option 
+              *ngFor="let priority of priorities" 
+              [value]="priority.value"
+              [style.color]="priority.color"
+            >
+              {{ priority.label }}
+            </option>
+          </select>
+          <div class="priority-indicator" [style.background-color]="getPriorityColor(ticketForm.get('priority')?.value)"></div>
+        </div>
+
+        
+        
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="category" class="form-label">
+            <i class="fas fa-tags"></i>
+            Catégorie *
+          </label>
+          <select
+            id="category"
+            formControlName="category"
+            class="form-select"
+          >
+            <option *ngFor="let category of categories" [value]="category.value">
+              {{ category.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="type" class="form-label">
+            <i class="fas fa-layer-group"></i>
+            Type *
+          </label>
+          <select
+            id="type"
+            formControlName="type"
+            class="form-select type-select"
+          >
+            <option 
+              *ngFor="let type of types" 
+              [value]="type.value"
+              [style.color]="type.color"
+            >
+              {{ type.label }}
+            </option>
+          </select>
+          <div class="type-indicator" [style.background-color]="getTypeColor(ticketForm.get('type')?.value)"></div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          <i class="fas fa-times"></i>
+          Annuler
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="ticketForm.invalid"
+        >
+          <i class="fas fa-save"></i>
+          {{ mode === 'create' ? 'Créer' : 'Mettre à jour' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+/* Custom CSS pour améliorer l'apparence */
+.table > :not(caption) > * > * {
+  padding: 1rem 0.75rem;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  color: #6c757d;
+  font-weight: 500;
+  padding: 0.75rem 0;
+  margin-right: 2rem;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-tabs .nav-link.active {
+  background: none;
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.badge {
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.bg-danger-subtle {
+  background-color: #f8d7da !important;
+}
+
+.bg-success-subtle {
+  background-color: #d1e7dd !important;
+}
+
+.bg-secondary-subtle {
+  background-color: #e9ecef !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.text-secondary {
+  color: #6c757d !important;
+}
+
+.btn-outline-secondary {
+  border-color: #dee2e6;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  color: #495057;
+}
+
+.input-group-text {
+  border-color: #dee2e6;
+}
+
+.form-control {
+  border-color: #dee2e6;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #007bff;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-menu {
+  border: 1px solid #dee2e6;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}

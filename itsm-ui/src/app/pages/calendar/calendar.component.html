@@ -1,0 +1,299 @@
+<!-- ticket-dashboard.component.html -->
+<div class="container-fluid p-0">
+  <div class="row g-0">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 sidebar">
+      <div class="d-flex align-items-center mb-4">
+        <div class="logo me-2">
+          <span class="logo-text">D</span>
+        </div>
+        <h5 class="mb-0 text-white">Dashboard</h5>
+      </div>
+      
+      <nav class="nav flex-column">
+        <a class="nav-link" href="/create-ticket">
+          <i class="bi bi-plus-circle"></i> Create Ticket
+        </a>
+        <a class="nav-link" href="/getAllTicket">
+          <i class="bi bi-ticket"></i> All Tickets
+        </a>
+        <a class="nav-link" href="/tickets-assigned-to-me">
+          <i class="bi bi-person"></i> Assigned to Me
+        </a>
+        <a class="nav-link" href="/stats">
+          <i class="bi bi-bar-chart"></i> Stats
+        </a>
+        <a class="nav-link" href="/messages">
+          <i class="bi bi-chat-dots"></i> Messages
+        </a>
+        <a class="nav-link active" href="/calendar">
+          <i class="bi bi-calendar"></i> Calendar
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 main-content">
+      <!-- Header Section -->
+      <div class="header d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="mb-1">
+            <i class="bi bi-calendar3 me-2 text-primary"></i>
+            Calendar View
+          </h1>
+          <p class="text-muted mb-0">
+            Manage your tickets timeline and SLA deadlines
+          </p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline-primary me-2" (click)="toggleCalendarView()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+          <button class="btn btn-primary" (click)="exportCalendar()">
+            <i class="bi bi-download"></i> Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="stats-card bg-primary">
+            <div class="stats-icon">
+              <i class="bi bi-ticket-detailed"></i>
+            </div>
+            <div class="stats-content">
+              <h3 class="stats-number">{{ totalTickets }}</h3>
+              <p class="stats-label">Total Tickets</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="stats-card bg-warning">
+            <div class="stats-icon">
+              <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="stats-content">
+              <h3 class="stats-number">{{ slaViolations }}</h3>
+              <p class="stats-label">SLA Violations</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="stats-card bg-success">
+            <div class="stats-icon">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stats-content">
+              <h3 class="stats-number">{{ resolvedTickets }}</h3>
+              <p class="stats-label">Resolved</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="stats-card bg-danger">
+            <div class="stats-icon">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stats-content">
+              <h3 class="stats-number">{{ criticalTickets }}</h3>
+              <p class="stats-label">New</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar Controls -->
+      <div class="calendar-controls mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-outline-secondary" (click)="changeView('dayGridMonth')">
+                <i class="bi bi-calendar-month"></i> Month
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="changeView('timeGridWeek')">
+                <i class="bi bi-calendar-week"></i> Week
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="changeView('timeGridDay')">
+                <i class="bi bi-calendar-day"></i> Day
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="changeView('listWeek')">
+                <i class="bi bi-list-ul"></i> List
+              </button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex justify-content-end align-items-center">
+              <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="slaAlerts" [(ngModel)]="showSlaAlerts" (change)="toggleSlaAlerts()">
+                <label class="form-check-label" for="slaAlerts">
+                  <i class="bi bi-bell"></i> SLA Alerts
+                </label>
+              </div>
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  <i class="bi bi-funnel"></i> Filter
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item"  (click)="filterByStatus('ALL')">All Tickets</a></li>
+                  <li><a class="dropdown-item"  (click)="filterByStatus('NEW')">New</a></li>
+                  <li><a class="dropdown-item"  (click)="filterByStatus('IN_PROGRESS')">In Progress</a></li>
+                  <li><a class="dropdown-item"  (click)="filterByStatus('RESOLVED')">Resolved</a></li>
+                  <li><a class="dropdown-item"  (click)="filterByStatus('CRITICAL')">Critical</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar Container -->
+      <div class="calendar-container">
+        <div class="demo-app">
+          <div class="demo-app-main">
+            <full-calendar 
+              *ngIf="calendarVisible()" 
+              [options]="calendarOptions()"
+              #calendar>
+              <ng-template #eventContent let-arg>
+                <div class="custom-event">
+                  <div class="event-header">
+                    <b class="event-time">{{ arg.timeText }}</b>
+                    <span *ngIf="isSlaViolated(arg.event)" class="badge bg-danger ms-1">
+                      <i class="bi bi-exclamation-triangle"></i>
+                    </span>
+                  </div>
+                  <div class="event-content">
+                    <i class="event-title">{{ arg.event.title }}</i>
+                    <div class="event-meta">
+                      <span class="badge" [ngClass]="getStatusBadgeClass(arg.event.extendedProps.status)">
+                        {{ arg.event.extendedProps.status }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </full-calendar>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="calendar-legend mt-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-info-circle me-2"></i>
+              Legend
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Status Colors:</h6>
+                <div class="legend-items">
+                  <div class="legend-item">
+                    <span class="legend-color" style="background-color: #007bff;"></span>
+                    <span>New</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-color" style="background-color: #FFD700;"></span>
+                    <span>In Progress</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-color" style="background-color: #28a745;"></span>
+                    <span>Resolved</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-color" style="background-color: #dc3545;"></span>
+                    <span>Critical</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h6>Indicators:</h6>
+                <div class="legend-items">
+                  <div class="legend-item">
+                    <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+                    <span>SLA Violation</span>
+                  </div>
+                  <div class="legend-item">
+                    <i class="bi bi-clock text-warning me-2"></i>
+                    <span>Due Soon</span>
+                  </div>
+                  <div class="legend-item">
+                    <i class="bi bi-check-circle text-success me-2"></i>
+                    <span>Completed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Bot Component -->
+<app-chat-bot></app-chat-bot>
+
+<!-- Event Detail Modal -->
+<div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventDetailModalLabel">
+          <i class="bi bi-ticket-detailed me-2"></i>
+          Ticket Details
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedEvent">
+        <div class="row">
+          <div class="col-md-8">
+            <h4>{{ selectedEvent.title }}</h4>
+            <p class="text-muted">{{ selectedEvent.extendedProps['description'] }}</p>
+            
+            <div class="row mt-3">
+              <div class="col-sm-6">
+                <strong>Priority:</strong>
+                <span class="badge ms-2" [ngClass]="getPriorityBadgeClass(selectedEvent.extendedProps['priority'])">
+                  {{ selectedEvent.extendedProps['priority'] }}
+                </span>
+              </div>
+              <div class="col-sm-6">
+                <strong>Assignee:</strong>
+                <span class="ms-2">{{ selectedEvent.extendedProps['assignedTo'] || 'Unassigned' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="event-timeline">
+              <div class="timeline-item">
+                <i class="bi bi-calendar-plus text-primary"></i>
+                <div>
+                  <strong>Created:</strong><br>
+                  <small>{{ selectedEvent.extendedProps['createdAt'] | date:'medium' }}</small>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <i class="bi bi-calendar-check text-success"></i>
+                <div>
+                  <strong>Due:</strong><br>
+                  <small>{{ selectedEvent.endStr | date:'medium' }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" [disabled]="!selectedEvent" (click)="selectedEvent && editTicket(selectedEvent)">
+          <i class="bi bi-pencil"></i> Edit Ticket
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

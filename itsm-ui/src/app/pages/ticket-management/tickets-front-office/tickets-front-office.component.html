@@ -1,0 +1,255 @@
+<!-- kanban-board.component.html -->
+<div class="kanban-container">
+  <!-- Fixed Header -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top kanban-navbar">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand d-flex align-items-center">
+        <i class="bi bi-check2-square me-2 brand-icon"></i>
+        <strong class="brand-text">Easyflow</strong>
+      </a>
+      
+      <div class="navbar-nav d-none d-lg-flex flex-row me-auto ms-4">
+        <a class="nav-link nav-item-custom active" href="#">
+          <i class="bi bi-house-door me-1"></i>Home
+        </a>
+        <a class="nav-link nav-item-custom" href="#">
+          <i class="bi bi-ticket-perforated me-1"></i>Ticket
+        </a>
+        <a class="nav-link nav-item-custom" href="#">
+          <i class="bi bi-list-task me-1"></i>Task
+        </a>
+        <a class="nav-link nav-item-custom" href="#">
+          <i class="bi bi-diagram-3 me-1"></i>Workflow
+        </a>
+      </div>
+      
+      <div class="d-flex align-items-center">
+        <div class="search-container me-3">
+          <div class="input-group">
+            <span class="input-group-text search-icon">
+              <i class="bi bi-search"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control search-input" 
+              placeholder="Search tickets..."
+              [(ngModel)]="searchQuery"
+              (keyup.enter)="onSearch()">
+          </div>
+        </div>
+        
+        <div class="d-flex align-items-center">
+          <div class="notification">
+             <app-ticket-notification></app-ticket-notification>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-outline-light btn-sm dropdown-toggle profile-btn" 
+                    type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/profile-info"><i class="bi bi-person me-2"></i>Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
+<li>
+  <a class="dropdown-item" (click)="logout()">
+    <i class="bi bi-box-arrow-right me-2"></i>Logout
+  </a>
+</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container-fluid p-4">
+      <!-- Header Section -->
+      <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="d-flex align-items-center">
+            <h2 class="page-title mb-0 me-3">
+              <i class="bi bi-kanban me-2"></i>
+              ISSUE TRACKER
+            </h2>
+           
+          </div>
+          
+          <div class="d-flex align-items-center">
+           
+            
+           
+          </div>
+        </div>
+      </div>
+
+      <!-- Kanban Board -->
+      <div class="kanban-board">
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6" *ngFor="let column of columns; let i = index">
+            <div class="kanban-column">
+              <div class="column-header">
+                <div class="d-flex align-items-center">
+                  <span class="status-indicator" [ngClass]="'status-' + column.color"></span>
+                  <span class="column-title">{{column.title}}</span>
+                  <span class="ticket-count">({{column.count}})</span>
+                </div>
+                <button class="btn btn-sm add-ticket-btn" 
+                        (click)="openCreateModal()"
+                        data-bs-toggle="tooltip" 
+                        title="Add new ticket">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+              
+              <div class="column-body">
+                <div class="ticket-card" *ngFor="let ticket of column.tickets">
+                  <div class="ticket-header">
+                    <div class="d-flex justify-content-between align-items-start">
+                     <i class="priority-flag" 
+   [ngClass]="{
+     'text-danger': ticket.priority === 'CRITICAL' || ticket.priority === 'HIGH',
+     'text-warning': ticket.priority === 'MEDIUM',
+     'text-success': ticket.priority === 'LOW'
+   }"
+   [class]="getPriorityIcon(ticket.priority)">
+</i>
+
+                      <div class="dropdown">
+                        <button class="btn btn-sm ticket-menu" 
+                                data-bs-toggle="dropdown">
+                          <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a class="dropdown-item" (click)="onTicketAction(ticket, 'edit')">
+                            <i class="bi bi-pencil me-2"></i>Edit
+                          </a></li>
+                          <li><a class="dropdown-item" (click)="onTicketAction(ticket, 'move')">
+                            <i class="bi bi-arrow-right me-2"></i>Move
+                          </a></li>
+                           <li><a class="dropdown-item" (click)="onTicketAction(ticket, 'upload')">
+                            <i class="bi bi-box-arrow-in-down me-2"></i>Upload file
+                          </a></li>
+                          
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item text-danger" (click)="onTicketAction(ticket, 'delete')">
+                            <i class="bi bi-trash me-2"></i>Delete
+                          </a></li>
+                         
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="ticket-content">
+                    <div class="ticket-id">TICKET # {{ticket.id}}</div>
+                    <h6 class="ticket-title">{{ticket.title}}</h6>
+                    <p class="ticket-description">{{ticket.description}}</p>
+                    
+                    <div class="ticket-tags" >
+                      <span class="badge tag-badge">{{ticket.type}}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="ticket-footer">
+                    <div class="assignees">
+                      <img  
+                           [src]="'https://via.placeholder.com/28/' + getRandomColor() + '/ffffff?text=' + ticket.recipient" 
+                           class="assignee-avatar" 
+                          
+                           data-bs-toggle="tooltip"
+                           [title]="'Assignee ' + ticket.recipient">
+                    </div>
+                    
+                    <div class="ticket-date">
+                      <i class="bi bi-calendar3 me-1"></i>
+                      {{ticket.createdDate | date: 'shortDate'}}
+                    </div>
+                  </div>
+                </div>
+                 <!-- Pagination Footer -->
+<div class="card-footer py-3">
+  <div class="d-flex justify-content-between align-items-center">
+    
+    <nav aria-label="Page navigation">
+      <ul class="pagination pagination-md mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link rounded-start" (click)="goToFirstPage()" 
+             [style.cursor]="currentPage === 1 ? 'not-allowed' : 'pointer'" 
+             aria-label="First">
+            <i class="bi bi-chevron-double-left"></i>
+          </a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" (click)="goToPreviousPage()" 
+             [style.cursor]="currentPage === 1 ? 'not-allowed' : 'pointer'" 
+             aria-label="Previous">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+        
+        <li class="page-item" *ngFor="let page of getPaginationRange()" 
+            [class.active]="currentPage === page">
+          <a class="page-link" (click)="goToPage(page)" 
+             [style.cursor]="'pointer'">{{ page }}</a>
+        </li>
+        
+        <li class="page-item" [class.disabled]="currentPage === totalPages || totalPages === 0">
+          <a class="page-link" (click)="goToNextPage()" 
+             [style.cursor]="currentPage === totalPages || totalPages === 0 ? 'not-allowed' : 'pointer'" 
+             aria-label="Next">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages || totalPages === 0">
+          <a class="page-link rounded-end" (click)="goToLastPage()" 
+             [style.cursor]="currentPage === totalPages || totalPages === 0 ? 'not-allowed' : 'pointer'" 
+             aria-label="Last">
+            <i class="bi bi-chevron-double-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>
+    <app-footer></app-footer>
+</footer>
+ <app-ticket-modal
+        [isOpen]="isModalOpen"
+        [ticket]="selectedTicket"
+        [mode]="modalMode"
+        (closeModal)="closeModal()"
+        (saveTicket)="onSaveTicket($event)"
+        (updateTicket)="onUpdateTicket($event)"
+      ></app-ticket-modal>
+<app-delete-dialog 
+  [isVisible]="showDeleteDialog"
+  (confirmed)="onDeleteConfirmed($event)"
+  (cancelled)="onDeleteCancelled()">
+</app-delete-dialog>
+
+<app-ticket-details
+  [ticket]="selectedTicket"
+  [isVisible]="isDialogVisible"
+  (close)="closeDialog()"
+  (edit)="editTicket($event)"
+  (exportPdf)="exportTicketToPDF($event)">
+</app-ticket-details>
+
+<app-file-uploads-modal   
+  [isVisible]="isFileUploadModalVisible"   
+  (fileSelected)="onFileSelected($event)"   
+  (cancel)="closeFileUploadModal()"   
+  (confirm)="confirmFileUpload($event)">
+</app-file-uploads-modal>
+<app-chat-bot></app-chat-bot>

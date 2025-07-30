@@ -1,0 +1,29 @@
+<!-- ticket-dashboard.component.html -->
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 col-lg-2 sidebar">
+      <div class="d-flex align-items-center mb-4">
+        <div class="logo me-2">
+          <span class="logo-text">D</span>
+        </div>
+        <h5 class="mb-0">Dashboard</h5>
+      </div>
+      
+      <nav class="nav flex-column">
+        <a class="nav-link active" href="/create-ticket">
+          <i class="bi bi-plus-circle"></i> Create Ticket
+        </a>
+        <a class="nav-link" href="/getAllTicket"><i class="bi bi-ticket"></i> All Tickets </a>
+        <a class="nav-link" href="/tickets-assigned-to-me"><i class="bi bi-person"></i> Assigned to Me</a>
+        <a class="nav-link" href="/stats"><i class="bi bi-bar-chart"></i> Stats</a>
+        <a class="nav-link" href="/messages"><i class="bi bi-chat-dots"></i> Messages</a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 main-content">
+     <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
