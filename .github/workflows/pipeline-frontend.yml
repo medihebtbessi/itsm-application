@@ -3,7 +3,7 @@ name: ITSM Frontend Pipeline
 on:
   push:
     branches:
-      - itsm-ui
+      - master
     paths:
       - itsm-ui/**
       - docker/frontend/**
