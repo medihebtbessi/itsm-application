@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - main
     paths:
       - itsm_backend/**
       - .github/workflows/*-backend.yml
@@ -80,25 +79,17 @@ jobs:
       - name: Build project
         run: |
           cd itsm_backend
-          ./mvnw clean package 
+          ./mvnw clean compile 
   build-image:
     runs-on: ubuntu-latest
     name: Build Docker image
     needs: [build]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Setup JDk
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'corretto'
-      - name: Build project
-        run: |
-          cd itsm_backend
-          ./mvnw clean package 
 
       - name: Extract project version
         id: extract_version
