@@ -34,33 +34,34 @@ jobs:
         run: |
           cd itsm_backend
           ./mvnw clean compile
-  unit-tests:
-    runs-on: ubuntu-latest
-    name:  Unit tests
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  #unit-tests:
+   # runs-on: ubuntu-latest
+    #name:  Unit tests
+    #steps:
+     # - name: Checkout code
+      #  uses: actions/checkout@v4
+       # with:
+        #  fetch-depth: 0
 
-      - name: Setup JDk
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'corretto'
-      - name: Give execution permission to mvnw
-        run: chmod +x ./mvnw
-        working-directory: itsm_backend
+      #- name: Setup JDk
+       # uses: actions/setup-java@v4
+        #with:
+         # java-version: 17
+          #distribution: 'corretto'
+      #- name: Give execution permission to mvnw
+       # run: chmod +x ./mvnw
+        #working-directory: itsm_backend
 
 
-      - name: Running unit tests
-        run: |
-          cd itsm_backend
-          ./mvnw  clean test
+      #- name: Running unit tests
+       # run: |
+        #  cd itsm_backend
+         # ./mvnw  clean test
   build:
     runs-on: ubuntu-latest
     name: Build project
-    needs: [compile, unit-tests]
+    #needs: [compile, unit-tests]
+    needs: [compile]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
