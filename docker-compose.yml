@@ -120,6 +120,13 @@ services:
       - "8080:80" 
     networks:
       - spring-demo
+  chat-bot:
+    container_name: chatbot-itsm
+    image: chatbot/chatbot:1.0.0
+    ports:
+      - "5000:5000"
+    networks:
+      - spring-demo
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
