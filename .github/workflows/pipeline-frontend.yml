@@ -3,9 +3,12 @@ name: ITSM Frontend Pipeline
 on:
   push:
     branches:
-      - itsm-ui
+      - master
     paths:
-      - '**'
+      - itsm-ui/**
+      - docker/frontend/**
+      - 'docker-compose.yml'
+      - .github/workflows/*-frontend.yml
 jobs:
   build-image:
     name: Build FE Docker image
@@ -31,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: itsm-ui
-          file: Dockerfile
+          file: docker/frontend/Dockerfile
           push: true
           platforms: linux/amd64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/itsm-ui:latest,${{ secrets.DOCKERHUB_USERNAME }}/itsm-ui:${{ steps.extract_version.outputs.VERSION }}
