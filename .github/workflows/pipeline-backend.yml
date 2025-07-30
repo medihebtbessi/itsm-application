@@ -24,7 +24,7 @@ jobs:
       - name: Setup JDk
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: '17'
           distribution: 'corretto'
       - name: Give execute permission to mvnw
         run: chmod +x ./mvnw
@@ -71,7 +71,7 @@ jobs:
       - name: Setup JDk
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: '17'
           distribution: 'corretto'
       - name: Give execute permission to mvnw
         run: chmod +x ./mvnw
@@ -93,7 +93,7 @@ jobs:
       - name: Setup JDk
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: '17'
           distribution: 'corretto'
       - name: Build project
         run: |
