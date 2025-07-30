@@ -45,6 +45,10 @@ jobs:
         with:
           java-version: 17
           distribution: 'corretto'
+      - name: Give execution permission to mvnw
+        run: chmod +x ./mvnw
+        working-directory: itsm_backend
+
 
       - name: Running unit tests
         run: |
