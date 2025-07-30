@@ -11,22 +11,7 @@ on:
       - docker/backend/Dockerfile
 
 jobs:
-  check-code:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: List root files
-        run: ls -la
-      - name: Check itsm_backend directory
-        run: |
-          if [ -d "itsm_backend" ]; then
-            echo "itsm_backend exists"
-          else
-            echo "itsm_backend NOT found"
-            exit 1
-          fi
+  
   compile:
     runs-on: ubuntu-latest
     name: Compile project
@@ -101,11 +86,20 @@ jobs:
     name: Build Docker image
     needs: [build]
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup JDk
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'corretto'
+      - name: Give execute permission to mvnw
+        run: chmod +x ./mvnw
+        working-directory: itsm_backend
+
       - name: Debug - list root files
         run: ls -la
 
@@ -135,6 +129,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-image]
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
       - name: Create deployment file
         run: ssh ${{secrets.VPS_USERNAME }}@${{secrets.VPS_IP }} "mkdir -p ci-cd"
       - name: Copy Docker Compose file
@@ -149,4 +148,3 @@ jobs:
           docker-compose -f docker-compose.yml pull -q
           docker-compose -f docker-compose.yml up -d 
           EOF
-        
