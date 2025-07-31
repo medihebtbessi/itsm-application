@@ -10,6 +10,9 @@ on:
       - .github/workflows/*-backend.yml
       - 'docker-compose.yml'
       - docker/backend/Dockerfile
+      - 'init-debezium.sh.docx'
+      - 'init-user-db.sql'
+      - 'postgres-connector.json'
 
 jobs:
   
