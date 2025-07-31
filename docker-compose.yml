@@ -96,7 +96,7 @@ services:
       - spring-demo
   itsm-api:
     container_name: itsm-api
-    image: itsm/itsm:1.0.0
+    image: mohamedihebtbessi2001/itsm-api:1.0.0
     ports:
       - "8090:8090"
     networks:
@@ -111,9 +111,12 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-sql-itsm:5432/itsm_thales
       - SPRING_REDIS_HOST=redis
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - EMAIL_HOST_NAME: ${EMAIL_HOST_NAME}
+      - EMAIL_USER_NAME: ${EMAIL_USER_NAME}
+      - EMAIL_PASSWORD: ${EMAIL_PASSWORD}
   itsm-ui:
     container_name: itsm-ui
-    image: itsm/itsm-ui:1.0.0
+    image: mohamedihebtbessi2001/itsm-ui:1.0.0
     depends_on:
       - itsm-api
     ports:
