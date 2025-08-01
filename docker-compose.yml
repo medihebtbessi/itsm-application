@@ -116,7 +116,7 @@ services:
       - EMAIL_PASSWORD: ${EMAIL_PASSWORD}
   itsm-ui:
     container_name: itsm-ui
-    image: mohamedihebtbessi2001/itsm-ui:1.0.0
+    image: mohamedihebtbessi2001/itsm-ui:0.0.0
     depends_on:
       - itsm-api
     ports:
@@ -136,7 +136,7 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"
-      - "29092:29092"  # ← expose pour accès depuis l'extérieur
+      - "29092:29092"  
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
